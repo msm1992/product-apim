@@ -39,10 +39,11 @@ public class MigrationClientFactoryTest {
 
         MigrationClient[] compatible18Clients = MigrationClientFactory.getAllClients(Constants.VERSION_1_8);
 
-        Assert.assertEquals(compatible18Clients.length, 3);
+        Assert.assertEquals(compatible18Clients.length, 4);
         Assert.assertTrue(compatible18Clients[0] instanceof MigrateFrom18to19);
         Assert.assertTrue(compatible18Clients[1] instanceof MigrateFrom19to110);
         Assert.assertTrue(compatible18Clients[2] instanceof MigrateFrom110to200);
+        Assert.assertTrue(compatible18Clients[3] instanceof MigrateFrom200to210);
     }
 
 
@@ -57,9 +58,10 @@ public class MigrationClientFactoryTest {
 
         MigrationClient[] compatible19Clients = MigrationClientFactory.getAllClients(Constants.VERSION_1_9);
 
-        Assert.assertEquals(compatible19Clients.length, 2);
+        Assert.assertEquals(compatible19Clients.length, 3);
         Assert.assertTrue(compatible19Clients[0] instanceof MigrateFrom19to110);
         Assert.assertTrue(compatible19Clients[1] instanceof MigrateFrom110to200);
+        Assert.assertTrue(compatible19Clients[2] instanceof MigrateFrom200to210);
     }
 
 
@@ -74,9 +76,10 @@ public class MigrationClientFactoryTest {
 
         MigrationClient[] compatible19Clients = MigrationClientFactory.getAllClients(Constants.VERSION_1_9_1);
 
-        Assert.assertEquals(compatible19Clients.length, 2);
+        Assert.assertEquals(compatible19Clients.length, 3);
         Assert.assertTrue(compatible19Clients[0] instanceof MigrateFrom19to110);
         Assert.assertTrue(compatible19Clients[1] instanceof MigrateFrom110to200);
+        Assert.assertTrue(compatible19Clients[2] instanceof MigrateFrom200to210);
     }
     
     @Test
@@ -90,8 +93,24 @@ public class MigrationClientFactoryTest {
 
         MigrationClient[] compatible110Clients = MigrationClientFactory.getAllClients(Constants.VERSION_1_10);
 
-        Assert.assertEquals(compatible110Clients.length, 1);
+        Assert.assertEquals(compatible110Clients.length, 2);
         Assert.assertTrue(compatible110Clients[0] instanceof MigrateFrom110to200);
+        Assert.assertTrue(compatible110Clients[1] instanceof MigrateFrom200to210);
+    }
+
+    @Test
+    public void testInitFactoryMigratingFrom200() throws Exception {
+        RegistryService mockRegistryService = Mockito.mock(RegistryService.class);
+
+        TenantManager mockTenantManager = Mockito.mock(TenantManager.class);
+        Mockito.when(mockTenantManager.getAllTenants()).thenReturn(new Tenant[]{new Tenant()});
+
+        MigrationClientFactory.initFactory(null, null, mockRegistryService, mockTenantManager, false);
+
+        MigrationClient[] compatible200Clients = MigrationClientFactory.getAllClients(Constants.VERSION_2_0_0);
+
+        Assert.assertEquals(compatible200Clients.length, 1);
+        Assert.assertTrue(compatible200Clients[0] instanceof MigrateFrom200to210);
     }
 
 
@@ -130,5 +149,11 @@ public class MigrationClientFactoryTest {
 
         MigrationClient migrateTo110Client = MigrationClientFactory.getClient(Constants.VERSION_1_10);
         Assert.assertTrue(migrateTo110Client instanceof MigrateFrom19to110);
+
+        MigrationClient migrateTo200Client = MigrationClientFactory.getClient(Constants.VERSION_2_0_0);
+        Assert.assertTrue(migrateTo200Client instanceof MigrateFrom110to200);
+
+        MigrationClient migrateTo210Client = MigrationClientFactory.getClient(Constants.VERSION_2_1_0);
+        Assert.assertTrue(migrateTo210Client instanceof MigrateFrom200to210);
     }
 }
