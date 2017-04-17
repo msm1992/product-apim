@@ -95,6 +95,7 @@ public class WebSocketAPITestCase extends APIMIntegrationBaseTest {
     public static Object[][] userModeDataProvider() {
         return new Object[][]{
                 new Object[]{TestUserMode.SUPER_TENANT_ADMIN},
+                new Object[] {TestUserMode.TENANT_ADMIN}
         };
     }
 
@@ -149,7 +150,12 @@ public class WebSocketAPITestCase extends APIMIntegrationBaseTest {
                 storeContext.getContextTenant().getContextUser().getPassword());
 
         // replace port with inbound endpoint port
-        apiEndPoint = getWebSocketAPIInvocationURL(apiContext, apiVersion);
+
+        if (TestUserMode.SUPER_TENANT_ADMIN.equals(userMode) || TestUserMode.SUPER_TENANT_USER.equals(userMode))   {
+            apiEndPoint = getWebSocketAPIInvocationURL(apiContext, apiVersion);
+        } else {
+            apiEndPoint = getWebSocketTenantAPIInvocationURL(apiContext, apiVersion, user.getUserDomain());
+        }
         log.info("API Endpoint URL" + apiEndPoint);
 
         List<APIIdentifier> publisherAPIList = APIMTestCaseUtils.
