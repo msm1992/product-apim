@@ -111,8 +111,21 @@ public class MigrateFrom200to210 extends MigrationClientBase implements Migratio
                 // update json_fault.xml and debug_json_fault.xml in registry
                 if (!isEmpty(apim210FaultSequenceContent)) {
                     try {
-                        registryService.updateGovernanceRegistryResource("/apimgt/customsequences/fault/json_fault.xml",
-                                apim210FaultSequenceContent);
+                        final String jsonFaultResourceRegistryLocation = "/apimgt/customsequences/fault/json_fault.xml";
+
+                        if (registryService.isGovernanceRegistryResourceExists(jsonFaultResourceRegistryLocation)) {
+                            // update
+                            registryService.updateGovernanceRegistryResource(jsonFaultResourceRegistryLocation,
+                                    apim210FaultSequenceContent);
+                        } else {
+                            // add
+                            registryService.addGovernanceRegistryResource(jsonFaultResourceRegistryLocation,
+                                    apim210FaultSequenceContent, "application/xml");
+                        }
+
+                        log.info("Successfully migrated json_fault.xml in registry for tenant: " + tenant.getDomain() +
+                                ", tenant id: " + tenant.getId());
+
                     } catch (UserStoreException e) {
                         log.error("Error in updating json_fault.xml in registry for tenant: " + tenant.getDomain() +
                                 ", tenant id: " + tenant.getId(), e);
@@ -124,8 +137,21 @@ public class MigrateFrom200to210 extends MigrationClientBase implements Migratio
 
                 if (!isEmpty(apim210DebugFaultSequenceContent)) {
                     try {
-                        registryService.updateGovernanceRegistryResource("/apimgt/customsequences/fault/debug_json_fault.xml",
-                                apim210DebugFaultSequenceContent);
+                        final String debugJsonFaultResourceRegistryLocation = "/apimgt/customsequences/fault/debug_json_fault.xml";
+
+                        if (registryService.isGovernanceRegistryResourceExists(debugJsonFaultResourceRegistryLocation)) {
+                            // update
+                            registryService.updateGovernanceRegistryResource(debugJsonFaultResourceRegistryLocation,
+                                    apim210DebugFaultSequenceContent);
+                        } else {
+                            // add
+                            registryService.addGovernanceRegistryResource(debugJsonFaultResourceRegistryLocation,
+                                    apim210DebugFaultSequenceContent, "application/xml");
+                        }
+
+                        log.info("Successfully migrated debug_json_fault.xml in registry for tenant: " +
+                                tenant.getDomain() + ", tenant id: " + tenant.getId());
+
                     } catch (UserStoreException e) {
                         log.error("Error in updating debug_json_fault.xml in registry for tenant: " +
                                 tenant.getDomain() + ", tenant id: " + tenant.getId(), e);
@@ -137,8 +163,6 @@ public class MigrateFrom200to210 extends MigrationClientBase implements Migratio
 
             } finally {
                 registryService.endTenantFlow();
-                log.info("Successfully migrated *json_fault.xml in registry for tenant: " + tenant.getDomain() +
-                        ", tenant id: " + tenant.getId());
             }
         }
     }
