@@ -733,7 +733,7 @@ public class APIPublisherRestClient {
         try {
             checkAuthentication();
             return HTTPSClientUtils.doGet(
-                    backendURL + "/publisher/prototype?name=" + apiName + "&version=" + version + "&provider=" + provider,
+                    backendURL + "/publisher/implement?name=" + apiName + "&version=" + version + "&provider=" + provider,
                     requestHeaders);
         } catch (Exception e) {
             throw new APIManagerIntegrationTestException("Exception when retrieving the API Implement page"
