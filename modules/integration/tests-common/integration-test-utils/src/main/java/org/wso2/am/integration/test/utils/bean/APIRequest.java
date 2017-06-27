@@ -68,6 +68,8 @@ public class APIRequest extends AbstractRequest {
     private JSONObject corsConfiguration;
     private String environment = "Production and Sandbox";
     private String apiTier = "";
+    private String responseCachingEnabled = "disabled";
+
 
     public String getEnvironment() {
         return environment;
@@ -227,6 +229,7 @@ public class APIRequest extends AbstractRequest {
         addParameter("environments", getEnvironment());
         addParameter("corsConfiguration", getCorsConfiguration().toString());
         addParameter("apiTier", getApiTier());
+        addParameter("responseCache", getResponseCachingEnabled());
 
         if (roles.length() > 1) {
             addParameter("roles", getRoles());
@@ -418,5 +421,13 @@ public class APIRequest extends AbstractRequest {
 
     public void setApiTier(String apiTier) {
         this.apiTier = apiTier;
+    }
+
+    public String getResponseCachingEnabled() {
+        return responseCachingEnabled;
+    }
+
+    public void setResponseCachingEnabled(String responseCachingEnabled) {
+        this.responseCachingEnabled = responseCachingEnabled;
     }
 }
