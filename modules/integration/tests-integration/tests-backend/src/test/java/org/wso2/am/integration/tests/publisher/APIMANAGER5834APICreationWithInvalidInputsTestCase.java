@@ -36,12 +36,12 @@ import java.net.URL;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-public class APICreationWithInvalidInputsTestCase extends APIMIntegrationBaseTest {
+public class APIMANAGER5834APICreationWithInvalidInputsTestCase extends APIMIntegrationBaseTest {
     private final String apiNameTest = "APIM18PublisherTest";
     private APIPublisherRestClient apiPublisher;
 
     @Factory(dataProvider = "userModeDataProvider")
-    public APICreationWithInvalidInputsTestCase(TestUserMode userMode) {
+    public APIMANAGER5834APICreationWithInvalidInputsTestCase(TestUserMode userMode) {
         this.userMode = userMode;
     }
 
