@@ -42,10 +42,10 @@ import org.wso2.carbon.automation.test.utils.http.client.HttpRequestUtil;
 import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 
-import javax.ws.rs.core.Response;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.core.Response;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -211,7 +211,7 @@ public class RefreshTokenTestCase extends APIMIntegrationBaseTest {
 
         //Get a new access token using refresh token
         String getAccessTokenFromRefreshTokenRequestBody =
-                "grant_type=refresh_token&refresh_token=" + refreshToken + "&scope=PRODUCTION";
+                "grant_type=refresh_token&refresh_token=" + refreshToken;
         accessTokenGenerationResponse = new JSONObject(
                 apiStore.generateUserAccessKey(consumerKey, consumerSecret,
                                                getAccessTokenFromRefreshTokenRequestBody,
