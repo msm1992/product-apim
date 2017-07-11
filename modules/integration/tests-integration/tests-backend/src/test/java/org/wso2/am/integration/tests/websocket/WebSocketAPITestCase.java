@@ -53,7 +53,6 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
 import org.wso2.carbon.utils.xml.StringUtils;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -66,6 +65,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javax.ws.rs.core.Response;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -251,7 +251,7 @@ public class WebSocketAPITestCase extends APIMIntegrationBaseTest {
         // get Access Token and Refresh Token
         String refreshToken = accessTokenGenerationResponse.getString("refresh_token");
         String getAccessTokenFromRefreshTokenRequestBody =
-                "grant_type=refresh_token&refresh_token=" + refreshToken + "&scope=PRODUCTION";
+                "grant_type=refresh_token&refresh_token=" + refreshToken;
         accessTokenGenerationResponse = new JSONObject(
                 apiStore.generateUserAccessKey(consumerKey, consumerSecret,
                         getAccessTokenFromRefreshTokenRequestBody,
