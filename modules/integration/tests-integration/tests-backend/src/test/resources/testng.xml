@@ -133,6 +133,7 @@
          <class name="org.wso2.am.integration.tests.other.APIM4765ResourceOrderInSwagger"/>
           <class name="org.wso2.am.integration.tests.other.APIMANAGER5750MultipleVersionAPISTestCase"/>
             <class name="org.wso2.am.integration.tests.rest.JsonResponseWithSingleElementWithBracketTestCase"/>
+            <class name="org.wso2.am.integration.tests.rest.ESBJAVA4721PIsWithCachingTest"/>
         </classes>
     </test>
 
