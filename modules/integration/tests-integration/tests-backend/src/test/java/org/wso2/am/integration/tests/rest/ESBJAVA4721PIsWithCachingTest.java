@@ -171,6 +171,7 @@ public class ESBJAVA4721PIsWithCachingTest extends APIMIntegrationBaseTest {
     @AfterClass(alwaysRun = true)
     public void destroy() throws Exception {
         apiStore.removeApplication(appName);
+        serverConfigurationManager.restoreToLastConfiguration();
         super.cleanUp();
     }
 
