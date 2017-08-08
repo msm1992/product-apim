@@ -64,10 +64,6 @@ public class APIMANAGER5858HttpDELETEWithPayloadSupportTestCase extends APIMInte
         super.init();
         String gatewaySessionCookie = createSession(gatewayContextMgt);
 
-        //Initialize publisher and store.
-        //apiPublisher = new APIPublisherRestClient(publisherUrls.getWebAppURLHttp());
-        //apiStore = new APIStoreRestClient(storeUrls.getWebAppURLHttp());
-
         //Load the back-end dummy API
         loadSynapseConfigurationFromClasspath(
                 "artifacts" + File.separator + "AM" + File.separator + "synapseconfigs" + File.separator + "rest"
