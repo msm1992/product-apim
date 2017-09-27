@@ -164,7 +164,8 @@ public class ESBJAVA4721PIsWithCachingTest extends APIMIntegrationBaseTest {
 
         assertEquals(serviceResponse.getResponseCode(), Response.Status.OK.getStatusCode(),
                 "Response code mismatched when api invocation");
-        assertTrue(serviceResponse.getData().contains("[\"water\"]"), "Response data mismatched when api invocation");
+        //backend returning payload has element "services":[ "water" ]
+        assertTrue(serviceResponse.getData().contains("[ \"water\" ]"), "Response data mismatched when api invocation");
 
     }
 
