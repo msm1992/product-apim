@@ -51,10 +51,10 @@ print("==");
 print(storeHostObj.getUserFields());
 print("==");
 //9
-print(storeHostObj.searchPaginatedAPIsByType("HostObjectTestAPI","wso2.com","0","10"));
+//print(storeHostObj.searchPaginatedAPIsByType("HostObjectTestAPI","wso2.com","0","10"));
 print("==");
 //10
-print(storeHostObj.searchPaginatedAPIsByType("name:*","wso2.com","0","10"));
+//print(storeHostObj.searchPaginatedAPIsByType("name:*","wso2.com","0","10"));
 print("==");
 //11
 print(storeHostObj.getPaginatedAPIsWithTag("youtube","0","10","wso2.com"));

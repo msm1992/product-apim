@@ -51,10 +51,10 @@ print("==");
 print(storeHostObj.getUserFields());
 print("==");
 //9
-print(storeHostObj.searchPaginatedAPIsByType("HostObjectTestAPI","carbon.super","0","10"));
+//print(storeHostObj.searchPaginatedAPIsByType("HostObjectTestAPI","carbon.super","0","10"));
 print("==");
 //10
-print(storeHostObj.searchPaginatedAPIsByType("name:*","carbon.super","0","10"));
+//print(storeHostObj.searchPaginatedAPIsByType("name:*","carbon.super","0","10"));
 print("==");
 //11
 print(storeHostObj.getPaginatedAPIsWithTag("youtube","0","10","carbon.super"));
