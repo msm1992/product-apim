@@ -136,6 +136,7 @@
             <class name="org.wso2.am.integration.tests.rest.ESBJAVA4721PIsWithCachingTest"/>
             <class name="org.wso2.am.integration.tests.other.APIMANAGER5858HttpDELETEWithPayloadSupportTestCase"/>
             <class name="org.wso2.am.integration.tests.rest.APIMANAGER5916PUTWithEmptyBodyTestCase" />
+            <class name="org.wso2.am.integration.tests.other.APIMANAGER3226APINameWithDifferentCaseTestCase"/>
         </classes>
     </test>
 
