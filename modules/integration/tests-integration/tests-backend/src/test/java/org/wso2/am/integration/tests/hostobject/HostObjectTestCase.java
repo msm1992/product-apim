@@ -44,13 +44,13 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.utils.FileManipulator;
 import org.wso2.carbon.utils.ServerConstants;
 
-import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import javax.xml.xpath.XPathExpressionException;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -258,10 +258,6 @@ public class HostObjectTestCase extends APIMIntegrationBaseTest {
                    "Error while getting status of self sign in from API store host object (isSelfSignupEnabled)");
         assertTrue(array[8].contains("fieldName"),
                    "Error while getting user fields from API store host object (getUserFields)");
-        assertTrue(array[9].contains("HostObjectTestAPI"),
-                   "Error while search Paginated APIs By Type from API store host object (searchPaginatedAPIsByType)");
-        assertTrue(array[10].contains("HostObjectTestAPI"),
-                   "Error while search Paginated APIs By Type with pattern * from API store host object (searchPaginatedAPIsByType)");
         assertTrue(array[11].contains("HostObjectTestAPI"),
                    "Error while getting paginated APIs with tag from API store host object (getPaginatedAPIsWithTag)");
         assertTrue(array[12].contains("HostObjectTestAPI"),
