@@ -320,7 +320,8 @@ public class GIT_1628_OAuthAppUpdateViaRestApiTestCase extends APIMIntegrationBa
     }
 
     @Test(description = "Key generation response should contain all grant types even when request does not have " +
-            "grant types. (for backword compatibility)")
+            "grant types. (for backward compatibility)",
+            dependsOnMethods = "testKeyGenerationResponseContainsGrantTypesAndCallback")
     public void testKeyGenerationWithoutGrantTypesNorCallback() throws Exception {
         String url = storeRestApiBaseUrl + "applications/generate-keys?applicationId=" + applicationId;
         String payload = "{\n" +
