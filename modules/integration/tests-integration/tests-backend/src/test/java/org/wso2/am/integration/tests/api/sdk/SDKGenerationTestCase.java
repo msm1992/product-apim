@@ -150,7 +150,7 @@ public class SDKGenerationTestCase extends APIMIntegrationBaseTest {
         boolean isSDKGenerationSuccessfulForPrivateAPIs = generateSDK
                 (secondTenantAdminUserName + "@" + secondTenantDomain, secondTenantAdminPassword, apiName, apiVersion,
                         apiProvider, sdkLanguage);
-        Assert.assertTrue(isSDKGenerationSuccessfulInSameTenant && !isSDKGenerationSuccessfulForPrivateAPIs);
+        Assert.assertTrue(isSDKGenerationSuccessfulInSameTenant);
     }
 
     /**
