@@ -17,7 +17,6 @@
 
 package org.wso2.am.integration.tests.restapi.testcases;
 
-
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
