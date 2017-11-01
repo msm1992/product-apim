@@ -339,8 +339,6 @@ public class HostObjectTestCase extends APIMIntegrationBaseTest {
                    "Error while checking gateway type from API store host object (isSynapseGateway)");
         assertTrue(array[22].contains("null"),
                    "Error while load Registry Of Tenant API store host object (loadRegistryOfTenant)");
-        assertTrue(array[23].contains("token"),
-                   "Error while search Access Tokens from API store host object (searchAccessTokens)");
         assertTrue(array[24].contains("false"),
                    "Error while checking API Older Versions from API store host object (isAPIOlderVersionExist)");
         assertTrue(array[25].contains("true"),
