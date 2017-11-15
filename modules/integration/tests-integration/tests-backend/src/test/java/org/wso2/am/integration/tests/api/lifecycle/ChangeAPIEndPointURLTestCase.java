@@ -47,7 +47,7 @@ public class ChangeAPIEndPointURLTestCase extends APIManagerLifecycleBaseTest {
     private final String API1_END_POINT_METHOD = "/customers/123";
     private final String API1_RESPONSE_DATA = "<id>123</id><name>John</name></Customer>";
     private final String API_VERSION_1_0_0 = "1.0.0";
-    private final String INVOKABLE_API_CONTEXT = API_VERSION_1_0_0 + "/api";
+    private final String TEST_API_CONTEXT = API_VERSION_1_0_0 + "/api";
     private final String API2_RESPONSE_DATA = "HelloWSO2";
     private final String API2_END_POINT_POSTFIX_URL = "name-check1_SB/name";
     private String api2EndPointUrl;
@@ -86,7 +86,7 @@ public class ChangeAPIEndPointURLTestCase extends APIManagerLifecycleBaseTest {
         //Invoke  old version
 
         HttpResponse oldVersionInvokeResponse =
-                HttpRequestUtil.doGet(getAPIInvocationURLHttp(INVOKABLE_API_CONTEXT)  + API1_END_POINT_METHOD,
+                HttpRequestUtil.doGet(getAPIInvocationURLHttp(TEST_API_CONTEXT)  + API1_END_POINT_METHOD,
                         requestHeaders);
         assertEquals(oldVersionInvokeResponse.getResponseCode(), HTTP_RESPONSE_CODE_OK,
                 "Response code mismatched when invoke api before change the end point URL");
@@ -122,7 +122,7 @@ public class ChangeAPIEndPointURLTestCase extends APIManagerLifecycleBaseTest {
             "  after end point URL  change", dependsOnMethods = "testEditEndPointURL")
     public void testInvokeAPIAfterChangeAPIEndPointURLWithNewEndPointURL() throws Exception {
         HttpResponse oldVersionInvokeResponse =
-                HttpRequestUtil.doGet(getAPIInvocationURLHttp(INVOKABLE_API_CONTEXT),
+                HttpRequestUtil.doGet(getAPIInvocationURLHttp(TEST_API_CONTEXT),
                         requestHeaders);
         assertEquals(oldVersionInvokeResponse.getResponseCode(), HTTP_RESPONSE_CODE_OK,
                 "Response code mismatched when invoke  API  after change the end point URL");
