@@ -71,18 +71,6 @@ public class ESBJAVA4721PIsWithCachingTest extends APIMIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
 
-        serverConfigurationManager = new ServerConfigurationManager(
-                new AutomationContext(APIMIntegrationConstants.AM_PRODUCT_GROUP_NAME,
-                        APIMIntegrationConstants.AM_GATEWAY_WRK_INSTANCE, TestUserMode.SUPER_TENANT_ADMIN));
-        //enable json stream formatter and builder
-        serverConfigurationManager.applyConfigurationWithoutRestart(new File(
-                getAMResourceLocation() + File.separator + "configFiles" + File.separator + "json_stream_conf"
-                        + File.separator + "axis2.xml"));
-        //add synapse.json.to.xml.processing.instruction.enabled=true property
-        serverConfigurationManager.applyConfiguration(new File(
-                getAMResourceLocation() + File.separator + "configFiles" + File.separator + "json_stream_conf"
-                        + File.separator + "synapse" + ".properties"));
-
         super.init(userMode);
         String publisherURLHttp = getPublisherURLHttp();
         String storeURLHttp = getStoreURLHttp();
@@ -172,7 +160,6 @@ public class ESBJAVA4721PIsWithCachingTest extends APIMIntegrationBaseTest {
     @AfterClass(alwaysRun = true)
     public void destroy() throws Exception {
         apiStore.removeApplication(appName);
-        serverConfigurationManager.restoreToLastConfiguration();
         super.cleanUp();
     }
 

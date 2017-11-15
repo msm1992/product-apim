@@ -216,7 +216,7 @@ public class HostObjectTestCase extends APIMIntegrationBaseTest {
                 }
                 if (null != finalOutputStore) {
                     responseArrayFromStore = finalOutputStore.split("==");
-                    isStoreResponse = responseArrayFromStore[9].contains("HostObjectTestAPI");
+                    isStoreResponse = responseArrayFromStore[15].contains("HostObjectTestAPI");
                 }
                 in.close();
             }
@@ -362,6 +362,8 @@ public class HostObjectTestCase extends APIMIntegrationBaseTest {
                    "Error while search API by part of the provider (searchAPIs)");
         assertTrue(!array[33].contains("HostObjectTestAPI"),
                    "Error while search API by invalid search key (searchAPIs)");
+        assertTrue(array[34].contains("true"),
+                "Error while update Tier Permissions from API store host object (updateTierPermissions)");
 
         return true;
     }
