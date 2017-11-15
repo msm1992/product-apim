@@ -232,15 +232,6 @@ public class NotificationTestCase extends APIMIntegrationBaseTest {
         }
         greenMail.stop();
 
-        /*String tenantConfSrcLocation = IOUtils.toString(new FileInputStream(
-                getAMResourceLocation() + File.separator + "configFiles" + File.separator + "common"
-                        + File.separator + "tenant-conf.json"));
-        resourceAdminServiceClient =
-                new ResourceAdminServiceClient(gatewayContextMgt.getContextUrls().getBackEndUrl(),
-                        createSession(gatewayContextMgt));
-
-        resourceAdminServiceClient.updateTextContent(TENANT_CONFIG_LOCATION, tenantConfSrcLocation);*/
-
         super.cleanUp();
     }
 
