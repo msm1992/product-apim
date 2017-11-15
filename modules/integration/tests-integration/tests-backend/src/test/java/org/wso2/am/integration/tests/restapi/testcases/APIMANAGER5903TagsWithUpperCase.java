@@ -21,18 +21,24 @@ package org.wso2.am.integration.tests.restapi.testcases;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.wso2.am.integration.test.utils.base.APIMIntegrationBaseTest;
+import org.wso2.am.integration.test.utils.http.HTTPSClientUtils;
 import org.wso2.am.integration.tests.restapi.RESTAPITestConstants;
 import org.wso2.am.integration.tests.restapi.utils.RESTAPITestUtil;
 import org.wso2.carbon.automation.engine.annotations.ExecutionEnvironment;
 import org.wso2.carbon.automation.engine.annotations.SetEnvironment;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 
 @SetEnvironment(executionEnvironments = {ExecutionEnvironment.STANDALONE})
@@ -67,6 +73,30 @@ public class APIMANAGER5903TagsWithUpperCase extends APIMIntegrationBaseTest {
                 RESTAPITestConstants.PATH_SUBSTRING + dataFileName;
         boolean testSuccessStatus = new RESTAPITestUtil().testRestAPI(dataFilePath, gatewayURL, keyManagerURL);
         assertTrue(testSuccessStatus);
+
+        int retry = 300;
+        int count = 0;
+        HttpResponse response;
+        String publisherRestApiBaseUrl = getStoreURLHttps() + "api/am/store/v0.11/";
+        while (retry > 0) {
+            try {
+
+                response = HTTPSClientUtils.doGet(publisherRestApiBaseUrl + "apis?query=tag:upperCase", null);
+                JSONObject json = new JSONObject(response.getData());
+                count = json.getInt("count");
+                if (count < 1) {
+                    Thread.sleep(1000);
+                } else {
+                    break;
+                }
+
+            } catch (IOException e) {
+            } catch (JSONException e) {
+            } catch (InterruptedException e) {
+            }
+            retry--;
+        }
+        Assert.assertEquals(count, 1);
     }
 
     @AfterClass(alwaysRun = true)
