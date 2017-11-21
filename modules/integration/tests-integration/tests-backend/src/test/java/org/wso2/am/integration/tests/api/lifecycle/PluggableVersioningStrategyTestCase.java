@@ -36,10 +36,8 @@ public class PluggableVersioningStrategyTestCase extends APIManagerLifecycleBase
 
     private static final Log log = LogFactory.getLog(PluggableVersioningStrategyTestCase.class);
 
-    private final String TEST_API_CONTEXT = API_VERSION_1_0_0 + "/api";
     private APIPublisherRestClient apiPublisherClientUser;
     private APIStoreRestClient apiStoreClientUser;
-    private final static String API_GET_ENDPOINT_METHOD = "/customers/123";
     private final static String RESPONSE_GET = "<id>123</id><name>John</name></Customer>";
 
 

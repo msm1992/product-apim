@@ -51,7 +51,6 @@ public class AddEditRemoveRESTResourceTestCase extends APIManagerLifecycleBaseTe
 
     private final String RESPONSE_GET = "<id>123</id><name>John</name></Customer>";
     private final String RESPONSE_POST = "Tom";
-    private final String API_GET_ENDPOINT_METHOD = "/customers/123";
     private final String API_POST_ENDPOINT_METHOD = "/customers/name/";
     private final String INVALID_URL = "/invalid";
     private final String INVALID_RESOURCE_INVOCATION =
