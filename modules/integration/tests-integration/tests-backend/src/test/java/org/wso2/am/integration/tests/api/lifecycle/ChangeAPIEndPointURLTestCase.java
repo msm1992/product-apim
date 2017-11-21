@@ -44,7 +44,6 @@ import static org.testng.Assert.assertTrue;
  */
 public class ChangeAPIEndPointURLTestCase extends APIManagerLifecycleBaseTest {
 
-    private final String API1_END_POINT_METHOD = "/customers/123";
     private final String API1_RESPONSE_DATA = "<id>123</id><name>John</name></Customer>";
     private final String API_VERSION_1_0_0 = "1.0.0";
     private final String TEST_API_CONTEXT = API_VERSION_1_0_0 + "/api";
@@ -86,7 +85,7 @@ public class ChangeAPIEndPointURLTestCase extends APIManagerLifecycleBaseTest {
         //Invoke  old version
 
         HttpResponse oldVersionInvokeResponse =
-                HttpRequestUtil.doGet(getAPIInvocationURLHttp(TEST_API_CONTEXT)  + API1_END_POINT_METHOD,
+                HttpRequestUtil.doGet(getAPIInvocationURLHttp(TEST_API_CONTEXT)  + API_GET_ENDPOINT_METHOD,
                         requestHeaders);
         assertEquals(oldVersionInvokeResponse.getResponseCode(), HTTP_RESPONSE_CODE_OK,
                 "Response code mismatched when invoke api before change the end point URL");

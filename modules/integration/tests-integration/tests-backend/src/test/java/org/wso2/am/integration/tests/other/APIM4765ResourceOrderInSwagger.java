@@ -27,6 +27,7 @@ import org.wso2.am.integration.test.utils.bean.APILifeCycleStateRequest;
 import org.wso2.am.integration.test.utils.bean.APIRequest;
 import org.wso2.am.integration.test.utils.clients.APIPublisherRestClient;
 import org.wso2.am.integration.test.utils.clients.APIStoreRestClient;
+import org.wso2.am.integration.tests.api.lifecycle.APIManagerLifecycleBaseTest;
 import org.wso2.carbon.automation.engine.annotations.ExecutionEnvironment;
 import org.wso2.carbon.automation.engine.annotations.SetEnvironment;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -43,10 +44,12 @@ import static org.testng.Assert.assertTrue;
  * This is the test case for https://wso2.org/jira/browse/APIMANAGER-4765
  */
 @SetEnvironment(executionEnvironments = { ExecutionEnvironment.STANDALONE }) public class APIM4765ResourceOrderInSwagger
-        extends APIMIntegrationBaseTest {
+        extends APIManagerLifecycleBaseTest {
 
     private APIPublisherRestClient apiPublisher;
     private APIStoreRestClient apiStore;
+    private String providerName;
+
 
     private static final Log log = LogFactory.getLog(APIM4765ResourceOrderInSwagger.class);
 
@@ -66,30 +69,12 @@ import static org.testng.Assert.assertTrue;
 
         apiPublisher.login(user.getUserName(), user.getPassword());
         apiStore.login(user.getUserName(), user.getPassword());
+        providerName = publisherContext.getContextTenant().getContextUser().getUserName();
 
     }
 
-    @Test(groups = { "wso2.am" }, description = "Test resource order in the swagger") public void swaggerResourceOrderTest()
+    @Test(groups = { "webapp" }, description = "Test resource order in the swagger") public void swaggerResourceOrderTest()
             throws Exception {
-
-        String APIName = "SwaggerReorderTest";
-        String APIContext = "swagger_reorder_test";
-        String tags = "youtube, token, media";
-        String url = getGatewayURLHttp() + "jaxrs_basic/services/customers/customerservice";
-        String description = "This is test API create by API manager integration test";
-        String providerName = publisherContext.getContextTenant().getContextUser().getUserName();
-        String APIVersion = "1.0.0";
-
-        APIRequest apiRequest = new APIRequest(APIName, APIContext, new URL(url), new URL(url));
-        apiRequest.setTags(tags);
-        apiRequest.setDescription(description);
-        apiRequest.setVersion(APIVersion);
-        apiRequest.setSandbox(url);
-        apiRequest.setProvider(user.getUserName());
-        apiPublisher.addAPI(apiRequest);
-        APILifeCycleStateRequest updateRequest = new APILifeCycleStateRequest(APIName, providerName,
-                APILifeCycleState.PUBLISHED);
-        apiPublisher.changeAPILifeCycleStatus(updateRequest);
 
         String swagger = "{\"paths\":{\"/*\":{\"get\":{\"x-auth-type\":\"Application \",\"x-throttling-tier\":\"Plus\","
                 + "\"responses\":{\"200\":{}}}},\"/post\":{\"get\":{\"x-auth-type\":\"Application \","
@@ -104,9 +89,9 @@ import static org.testng.Assert.assertTrue;
                 + "\"x-throttling-tier\":\"Plus\",\"responses\":{\"200\":{}}}},\"/list\":{\"get\":"
                 + "{\"x-auth-type\":\"Application \",\"x-throttling-tier\":\"Plus\",\"responses\":{\"200\":{}}}}}";
 
-        apiPublisher.updateResourceOfAPI(providerName, APIName, APIVersion, swagger);
+        apiPublisher.updateResourceOfAPI(providerName, API_NAME, API_VERSION_1_0_0, swagger);
         //get swagger doc.
-        String swaggerURL = getStoreURLHttps() + "store/api-docs/admin/SwaggerReorderTest/1.0.0";
+        String swaggerURL = getStoreURLHttps() + "store/api-docs/admin/APITest/1.0.0";
 
         Map<String, String> requestHeadersSandBox = new HashMap<String, String>();
         HttpResponse swaggerFileReadFromRegistry = HttpRequestUtil.doGet(swaggerURL, requestHeadersSandBox);
@@ -118,9 +103,5 @@ import static org.testng.Assert.assertTrue;
 
         assertTrue(isResourceOrderEqaul, "Resource order is not equal to the given order.");
 
-    }
-
-    @AfterClass(alwaysRun = true) public void destroy() throws Exception {
-        super.cleanUp();
     }
 }

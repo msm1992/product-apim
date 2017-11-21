@@ -79,8 +79,10 @@ public class APIManagerLifecycleBaseTest extends APIMIntegrationBaseTest {
     protected static final String API_CONTEXT = "{version}/api";
     protected static final String API_TAGS = "testTag1, testTag2, testTag3";
     protected static final String API_VERSION_1_0_0 = "1.0.0";
+    protected static final String TEST_API_CONTEXT = API_VERSION_1_0_0 + "/api";
     protected static final String API_DESCRIPTION = "This is test API create by API manager integration test";
     protected static final String APPLICATION_NAME = "ApplicationTest";
+    protected static final String API_GET_ENDPOINT_METHOD = "/customers/123";
 
     /**
      * Return a String with combining the value of API Name,API Version and API Provider Name as key:value format
