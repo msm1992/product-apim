@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ~ Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~    WSO2 Inc. licenses this file to you under the Apache License,
+  ~    Version 2.0 (the "License"); you may not use this file except
+  ~    in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing,
+  ~   software distributed under the License is distributed on an
+  ~   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~   KIND, either express or implied.  See the License for the
+  ~   specific language governing permissions and limitations
+  ~   under the License.
+  -->
+<definitions xmlns="http://ws.apache.org/ns/synapse">
+    <api context="/jsonAPI" name="jsonAPI">
+        <resource methods="POST" protocol="http" context="/jsonapi/1.0.0"
+                  version="1.0.0"
+                  version-type="context">
+            <inSequence>
+                <validate>
+                    <schema key="stockquote-json-schema"/>
+                    <on-fail>
+                        <payloadFactory media-type="json">
+                            <format>{"Error":"$1"}</format>
+                            <args>
+                                <arg evaluator="xml" expression="$ctx:ERROR_MESSAGE"/>
+                            </args>
+                        </payloadFactory>
+                        <respond/>
+                    </on-fail>
+                </validate>
+                <payloadFactory media-type="json">
+                    <format>{"Success":$1"}</format>
+                    <args>
+                        <arg evaluator="xml" expression="$ctx:ERROR_MESSAGE"/>
+                    </args>
+                </payloadFactory>
+                <property name="HTTP_SC" scope="axis2" type="STRING" value="200"/>
+                <respond/>
+            </inSequence>
+        </resource>
+    </api>
+    <localEntry key="stockquote-json-schema"><![CDATA[{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "getQuote": {
+      "type": "object",
+      "properties": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "pattern": "[a-z\\d~+-]+"
+            }
+          },
+          "required": [
+            "symbol"
+          ]
+        }
+      },
+      "required": [
+        "request"
+      ]
+    }
+  },
+  "required": [
+    "getQuote"
+  ]
+}]]><description/>
+    </localEntry>
+</definitions>
