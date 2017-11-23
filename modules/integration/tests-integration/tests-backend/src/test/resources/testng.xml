@@ -228,6 +228,7 @@
             <class name="org.wso2.am.integration.tests.other.NotificationTestCase"/>
             <class name="org.wso2.am.integration.tests.rest.ESBJAVA4721PIsWithCachingTest"/>
             <class name="org.wso2.am.integration.tests.json.ESBJAVA3380TestCase"/>
+            <class name="org.wso2.am.integration.tests.other.ESBJAVA5079JSONSchemaWithPatternTestCase"/>
             <class name="org.wso2.am.integration.tests.stats.APIInvocationStatPublisherTestCase"/>
             <class name="org.wso2.am.integration.tests.other.APIStateChangeWorkflowTestCase"/>
             <class name="org.wso2.am.integration.tests.other.TokenEncryptionScopeTestCase"/>
