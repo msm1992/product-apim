@@ -164,7 +164,6 @@ public class HostObjectTestCase extends APIMIntegrationBaseTest {
         copySampleFile(sourcePath, destinationPath);
 
         String finalOutputPublisher = null;
-        Thread.sleep(10000l);
         int deploymentDelayInMilliseconds = 90 * 1000;
         long startTime = System.currentTimeMillis();
 
