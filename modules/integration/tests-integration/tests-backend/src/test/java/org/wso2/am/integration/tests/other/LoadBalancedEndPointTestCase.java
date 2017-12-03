@@ -111,7 +111,6 @@ public class LoadBalancedEndPointTestCase extends APIMIntegrationBaseTest {
         webAppAdminClient.uploadWarFile(testArtifactWarFilePath + APIMIntegrationConstants.PRODEP1_WEB_APP_NAME + ".war");
         webAppAdminClient.uploadWarFile(testArtifactWarFilePath + APIMIntegrationConstants.PRODEP2_WEB_APP_NAME + ".war");
         webAppAdminClient.uploadWarFile(testArtifactWarFilePath + APIMIntegrationConstants.PRODEP3_WEB_APP_NAME + ".war");
-        webAppAdminClient.uploadWarFile(testArtifactWarFilePath + APIMIntegrationConstants.SANDBOXEP1_WEB_APP_NAME + ".war");
         webAppAdminClient.uploadWarFile(testArtifactWarFilePath + APIMIntegrationConstants.SANDBOXEP2_WEB_APP_NAME + ".war");
         webAppAdminClient.uploadWarFile(testArtifactWarFilePath + APIMIntegrationConstants.SANDBOXEP3_WEB_APP_NAME + ".war");
 
@@ -232,8 +231,6 @@ public class LoadBalancedEndPointTestCase extends APIMIntegrationBaseTest {
 
         int numberOfEndpoints = 3;
         int requestCount = 10;
-        //Todo replace sleep with proper method
-        Thread.sleep(80000);
         for (int requestNumber = 1; requestNumber < requestCount; requestNumber++) {
             apiInvokeResponse = HttpRequestUtil.doGet(accessUrl, applicationHeader);
             assertEquals(apiInvokeResponse.getResponseCode(), Response.Status.OK.getStatusCode(),
@@ -366,8 +363,6 @@ public class LoadBalancedEndPointTestCase extends APIMIntegrationBaseTest {
         int numberOfSandboxEndpoints = 3;
         int requestNumber;
 
-        //TODO replace sleep with proper method
-        Thread.sleep(80000);
         //production end point api invoke with production key
         for (requestNumber = 1; requestNumber < requestCount; requestNumber++) {
             apiProductionInvokeResponse = HttpRequestUtil.doGet(accessUrl, applicationHeaderProduction);
@@ -418,7 +413,6 @@ public class LoadBalancedEndPointTestCase extends APIMIntegrationBaseTest {
         webAppList.add(APIMIntegrationConstants.PRODEP1_WEB_APP_NAME);
         webAppList.add(APIMIntegrationConstants.PRODEP2_WEB_APP_NAME);
         webAppList.add(APIMIntegrationConstants.PRODEP3_WEB_APP_NAME);
-        webAppList.add(APIMIntegrationConstants.SANDBOXEP1_WEB_APP_NAME);
         webAppList.add(APIMIntegrationConstants.SANDBOXEP2_WEB_APP_NAME);
         webAppList.add(APIMIntegrationConstants.SANDBOXEP3_WEB_APP_NAME);
         webAppAdminClient.deleteWebAppList(webAppList, gatewayContextMgt.getDefaultInstance().getHosts().get("default"));

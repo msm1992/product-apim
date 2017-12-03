@@ -93,9 +93,6 @@ print("==");
 print(publisherHostObj.loadRegistryOfTenant("wso2.com"));
 print("==");
 //23
-print(publisherHostObj.searchAccessTokens("*:*"));
-print("==");
-
 var apiData = {};
 apiData["provider"] = "admin@wso2.com";
 apiData["name"] = "HostObjectTestAPI";
@@ -140,4 +137,12 @@ print(publisherHostObj.searchAPIs("admin@wso2.com","provider:adm"));
 print("==");
 //34
 print(publisherHostObj.searchAPIs("admin@wso2.com","manager:notexistkey"));
+print("==");
+
+var tierData = {};
+tierData["tierName"] = "Gold";
+tierData["permissiontype"] = "allow";
+tierData["roles"] = "admin";
+//35
+print(publisherHostObj.updateTierPermissions(tierData));
 print("==");
