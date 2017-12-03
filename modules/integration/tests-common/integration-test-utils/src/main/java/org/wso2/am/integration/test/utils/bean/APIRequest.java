@@ -69,7 +69,8 @@ public class APIRequest extends AbstractRequest {
     private String environment = "Production and Sandbox";
     private String apiTier = "";
     private String responseCachingEnabled = "disabled";
-
+    private String accessControl;
+    private String accessControlRoles;
 
     public String getEnvironment() {
         return environment;
@@ -209,6 +210,8 @@ public class APIRequest extends AbstractRequest {
         addParameter("endpoint_config", endpoint.toString());
         addParameter("provider", getProvider());
         addParameter("visibility", getVisibility());
+        addParameter("accessControl", getAccessControl());
+        addParameter("accessControlRoles", getAccessControlRoles());
         addParameter("version", getVersion());
         addParameter("description", getDescription());
         addParameter("endpointType", getEndpointType());
@@ -429,5 +432,21 @@ public class APIRequest extends AbstractRequest {
 
     public void setResponseCachingEnabled(String responseCachingEnabled) {
         this.responseCachingEnabled = responseCachingEnabled;
+    }
+
+    public String getAccessControl() {
+        return accessControl;
+    }
+
+    public void setAccessControl(String accessControl) {
+        this.accessControl = accessControl;
+    }
+
+    public String getAccessControlRoles() {
+        return accessControlRoles;
+    }
+
+    public void setAccessControlRoles(String accessControlRoles) {
+        this.accessControlRoles = accessControlRoles;
     }
 }
