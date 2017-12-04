@@ -157,6 +157,7 @@
             <class name="org.wso2.am.integration.tests.publisher.APIM614AddDocumentationToAnAPIWithDocTypeSampleAndSDKThroughPublisherRestAPITestCase"/>
             <class name="org.wso2.am.integration.tests.publisher.APIResourceWithTemplateTestCase"/>
             <class name="org.wso2.am.integration.tests.rest.DocAPIParameterTamperingTest"/>
+            <class name="org.wso2.am.integration.tests.other.PublisherAccessControlTestCase"/>
         </classes>
     </test>
 
@@ -217,8 +218,8 @@
     </test>
     <test name="apim-websocket-tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.wso2.am.integration.tests.websocket.WebSocketAPITestCase"/>
             <class name="org.wso2.am.integration.tests.websocket.APIMANAGER5869WSGayewatURLTestCase"/>
+            <class name="org.wso2.am.integration.tests.websocket.WebSocketAPITestCase"/>
         </classes>
     </test>
 

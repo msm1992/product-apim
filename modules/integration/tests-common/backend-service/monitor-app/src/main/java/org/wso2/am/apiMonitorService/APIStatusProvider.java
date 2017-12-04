@@ -55,18 +55,19 @@ public class APIStatusProvider {
         boolean deployed = false;
         try {
             apiNameList = this.getRestAPIAdmin(user,password).getApiNames();
-            for (String currentApi : apiNameList) {
-                if (currentApi.contains("--")
-                        && currentApi.split("--")[1].equals(apiName+":v"+version)) {
-                    APIData apiData =  this.getRestAPIAdmin(user,password).getApiByName(currentApi);
-                    apistatusData.setIsApiExists(true);
-                    apistatusData.setApiName(apiName);
-                    apistatusData.setProviderName(apiData.getFileName());
-                    apistatusData.setVersion(version);
-                    deployed = true;
-                    break;
-                } else {
-                    continue;
+            if (apiNameList != null) {
+                for (String currentApi : apiNameList) {
+                    if (currentApi.contains("--") && currentApi.split("--")[1].equals(apiName + ":v" + version)) {
+                        APIData apiData = this.getRestAPIAdmin(user, password).getApiByName(currentApi);
+                        apistatusData.setIsApiExists(true);
+                        apistatusData.setApiName(apiName);
+                        apistatusData.setProviderName(apiData.getFileName());
+                        apistatusData.setVersion(version);
+                        deployed = true;
+                        break;
+                    } else {
+                        continue;
+                    }
                 }
             }
             apistatusData.setIsApiExists(deployed);
