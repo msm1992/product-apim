@@ -22,9 +22,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.apimgt.importexport.APIExportException;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -47,6 +49,7 @@ public class AuthenticatorUtil {
     private static final Log log = LogFactory.getLog(AuthenticatorUtil.class);
     private static String username;
     private static String password;
+    public static final String APIM_ADMIN_PERMISSION = "/permission/admin/manage/apim_admin";
 
     private AuthenticatorUtil() {
     }
@@ -74,9 +77,10 @@ public class AuthenticatorUtil {
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-
             UserStoreManager userstoremanager =
                     CarbonContext.getThreadLocalCarbonContext().getUserRealm().getUserStoreManager();
+            AuthorizationManager authorizationManager = CarbonContext.getThreadLocalCarbonContext().getUserRealm()
+                    .getAuthorizationManager();
 
             String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
 
@@ -85,10 +89,10 @@ public class AuthenticatorUtil {
                 log.info(username + " user authenticated successfully");
                 //Get admin role name of the current domain
                 String adminRoleName = CarbonContext
-                                       .getThreadLocalCarbonContext()
-                                       .getUserRealm()
-                                       .getRealmConfiguration()
-                                       .getAdminRoleName();
+                        .getThreadLocalCarbonContext()
+                        .getUserRealm()
+                        .getRealmConfiguration()
+                        .getAdminRoleName();
 
                 String[] userRoles = userstoremanager.getRoleListOfUser(tenantAwareUsername);
 
@@ -100,6 +104,13 @@ public class AuthenticatorUtil {
                         return Response.ok().build();
                     }
                 }
+
+                if (authorizationManager.isUserAuthorized(tenantAwareUsername, APIM_ADMIN_PERMISSION,
+                        CarbonConstants.UI_PERMISSION_ACTION)) {
+                    log.info(username + " is authorized to import and export APIs");
+                    return Response.ok().build();
+                }
+
                 return Response.status(Response.Status.FORBIDDEN).entity("User Authorization " + "Failed")
                         .type(MediaType.APPLICATION_JSON).build();
 
