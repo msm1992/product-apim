@@ -50,6 +50,8 @@ public class AuthenticatorUtil {
     private static String username;
     private static String password;
     public static final String APIM_ADMIN_PERMISSION = "/permission/admin/manage/apim_admin";
+    public static final String APIM_LOGIN_PERMISSION = "/permission/admin/login";
+    public static final String APIM_API_CREATE_PERMISSION = "/permission/admin/manage/api/create";
 
     private AuthenticatorUtil() {
     }
@@ -79,6 +81,7 @@ public class AuthenticatorUtil {
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
             UserStoreManager userstoremanager =
                     CarbonContext.getThreadLocalCarbonContext().getUserRealm().getUserStoreManager();
+
             AuthorizationManager authorizationManager = CarbonContext.getThreadLocalCarbonContext().getUserRealm()
                     .getAuthorizationManager();
 
@@ -104,9 +107,12 @@ public class AuthenticatorUtil {
                         return Response.ok().build();
                     }
                 }
-
-                if (authorizationManager.isUserAuthorized(tenantAwareUsername, APIM_ADMIN_PERMISSION,
-                        CarbonConstants.UI_PERMISSION_ACTION)) {
+                //user is authorized for exporting and importing if he has API-M Admin, API Create and Login permissions.
+                if ((authorizationManager.isUserAuthorized(tenantAwareUsername, APIM_ADMIN_PERMISSION,
+                        CarbonConstants.UI_PERMISSION_ACTION)) && (authorizationManager.isUserAuthorized
+                        (tenantAwareUsername, APIM_LOGIN_PERMISSION, CarbonConstants.UI_PERMISSION_ACTION)) &&
+                        (authorizationManager.isUserAuthorized(tenantAwareUsername, APIM_API_CREATE_PERMISSION,
+                                CarbonConstants.UI_PERMISSION_ACTION))) {
                     log.info(username + " is authorized to import and export APIs");
                     return Response.ok().build();
                 }
