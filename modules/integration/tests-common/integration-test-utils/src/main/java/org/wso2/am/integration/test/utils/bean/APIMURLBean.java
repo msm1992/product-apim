@@ -59,18 +59,12 @@ public class APIMURLBean {
         webAppURLHttps = tempUrl + "/";
 
         tempUrl = contextUrls.getServiceUrl();
-        if (tempUrl.contains("/t/")) {
-            tempUrl = tempUrl.split("/t/")[0];
-        }
         if (tempUrl.contains("/services")) {
             tempUrl = tempUrl.replace("/services", "");
         }
         webAppURLNhttp = tempUrl + "/";
 
         tempUrl = contextUrls.getSecureServiceUrl();
-        if (tempUrl.contains("/t/")) {
-            tempUrl = tempUrl.split("/t/")[0];
-        }
         if (tempUrl.contains("/services")) {
             tempUrl = tempUrl.replace("/services", "");
         }
