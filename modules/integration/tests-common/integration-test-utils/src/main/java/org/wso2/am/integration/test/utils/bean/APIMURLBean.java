@@ -69,8 +69,6 @@ public class APIMURLBean {
             tempUrl = tempUrl.replace("/services", "");
         }
         webAppURLNhttps = tempUrl + "/";
-
-
     }
 
     public String getWebAppURLHttp() {

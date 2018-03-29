@@ -22,10 +22,19 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 import org.wso2.am.integration.test.utils.base.APIMIntegrationBaseTest;
 import org.wso2.am.integration.test.utils.base.APIMIntegrationConstants;
-import org.wso2.am.integration.test.utils.bean.*;
+import org.wso2.am.integration.test.utils.bean.APICreationRequestBean;
+import org.wso2.am.integration.test.utils.bean.APILifeCycleState;
+import org.wso2.am.integration.test.utils.bean.APILifeCycleStateRequest;
+import org.wso2.am.integration.test.utils.bean.APIRequest;
+import org.wso2.am.integration.test.utils.bean.APPKeyRequestGenerator;
+import org.wso2.am.integration.test.utils.bean.SubscriptionRequest;
 import org.wso2.am.integration.test.utils.clients.APIPublisherRestClient;
 import org.wso2.am.integration.test.utils.clients.APIStoreRestClient;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -33,12 +42,12 @@ import org.wso2.carbon.automation.test.utils.http.client.HttpRequestUtil;
 import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.core.Response;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -94,13 +103,10 @@ public class APIScopeTestCase extends APIMIntegrationBaseTest {
 
         // crating user john
         String userJohn;
-        String gatewayUrl;
+        String gatewayUrl = gatewayUrlsWrk.getWebAppURLNhttp();
         if (keyManagerContext.getContextTenant().getDomain().equals("carbon.super")) {
-            gatewayUrl = gatewayUrlsWrk.getWebAppURLNhttp();
             userJohn = USER_JOHN;
         } else {
-            gatewayUrl =
-                    gatewayUrlsWrk.getWebAppURLNhttp() + "t/" + keyManagerContext.getContextTenant().getDomain() + "/";
             userJohn = USER_JOHN + "@" + keyManagerContext.getContextTenant().getDomain();
         }
         userManagementClient1.addUser(USER_JOHN, "john123", new String[]{SUBSCRIBER_ROLE}, USER_JOHN);
@@ -108,7 +114,7 @@ public class APIScopeTestCase extends APIMIntegrationBaseTest {
         // Adding API
         String apiContext = "testScopeAPI";
         String tags = "thomas-bayer, testing, rest-Apis";
-        String url = getGatewayURLNhttp() + "response";
+        String url = getGatewayBaseURLNhttp() + "response";
         String description = "This is a test API created by API manager integration test";
 
         apiPublisher.login(user.getUserName(), user.getPassword());
@@ -161,7 +167,7 @@ public class APIScopeTestCase extends APIMIntegrationBaseTest {
         String consumerKey = jsonResponse.getJSONObject("data").getJSONObject("key").getString("consumerKey");
         String consumerSecret = jsonResponse.getJSONObject("data").getJSONObject("key").getString("consumerSecret");
 
-        URL tokenEndpointURL = new URL(gatewayUrlsWrk.getWebAppURLNhttp() + "token");
+        URL tokenEndpointURL = new URL(getGatewayBaseURLNhttp() + "token");
         String accessToken;
         Map<String, String> requestHeaders;
         HttpResponse response;

@@ -47,8 +47,6 @@ import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.tenant.mgt.stub.beans.xsd.TenantInfoBean;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,6 +54,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * Base class for all API Manager integration tests
@@ -349,6 +349,22 @@ public class APIMIntegrationBaseTest {
 
     protected String getGatewayURLNhttps() {
         return gatewayUrlsWrk.getWebAppURLNhttps();
+    }
+
+    protected String getGatewayBaseURLNhttp() {
+        String tokenUrl = gatewayUrlsWrk.getWebAppURLNhttp();
+        if (tokenUrl.contains("/t/")) {
+            tokenUrl = tokenUrl.split("/t/")[0] + '/';
+        }
+        return tokenUrl;
+    }
+
+    protected String getGatewayBaseURLNhttps() {
+        String tokenUrl = gatewayUrlsWrk.getWebAppURLNhttps();
+        if (tokenUrl.contains("/t/")) {
+            tokenUrl = tokenUrl.split("/t/")[0] + '/';
+        }
+        return tokenUrl;
     }
 
     protected String getKeyManagerURLHttp() {
