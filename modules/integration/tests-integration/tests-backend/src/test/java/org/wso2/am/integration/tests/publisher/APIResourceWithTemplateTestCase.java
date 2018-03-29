@@ -19,11 +19,22 @@
 package org.wso2.am.integration.tests.publisher;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 import org.wso2.am.integration.test.utils.base.APIMIntegrationConstants;
-import org.wso2.am.integration.test.utils.bean.*;
+import org.wso2.am.integration.test.utils.bean.APICreationRequestBean;
+import org.wso2.am.integration.test.utils.bean.APILifeCycleState;
+import org.wso2.am.integration.test.utils.bean.APILifeCycleStateRequest;
+import org.wso2.am.integration.test.utils.bean.APIResourceBean;
+import org.wso2.am.integration.test.utils.bean.APPKeyRequestGenerator;
+import org.wso2.am.integration.test.utils.bean.SubscriptionRequest;
 import org.wso2.am.integration.test.utils.clients.APIPublisherRestClient;
 import org.wso2.am.integration.test.utils.clients.APIStoreRestClient;
 import org.wso2.am.integration.test.utils.http.HTTPSClientUtils;
@@ -31,7 +42,6 @@ import org.wso2.am.integration.tests.api.lifecycle.APIManagerLifecycleBaseTest;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
-import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 
 import java.io.File;
 import java.net.URL;
@@ -43,6 +53,8 @@ import java.util.Map;
 import static org.testng.Assert.assertEquals;
 
 public class APIResourceWithTemplateTestCase extends APIManagerLifecycleBaseTest {
+
+    private static final Log log = LogFactory.getLog(APIResourceWithTemplateTestCase.class);
 
     private final String API_NAME_DEFAULT = "APIResourceWithTemplateDef";
     private final String API_CONTEXT_DEFAULT = "APIResourceWithTemplateDef";
@@ -152,7 +164,7 @@ public class APIResourceWithTemplateTestCase extends APIManagerLifecycleBaseTest
 
         APIStoreRestClient apiStore = new APIStoreRestClient(getStoreURLHttp());
         apiStore.login(user.getUserName(), user.getPassword());
-        String endpointUrl = getGatewayURLNhttp() + context + "/sub{uri.var.urlcontext}";
+        String endpointUrl = getGatewayBaseURLNhttp() + context + "/sub{uri.var.urlcontext}";
         APIPublisherRestClient apiPublisher = new APIPublisherRestClient(publisherURLHttp);
         apiPublisher.login(user.getUserName(), user.getPassword());
 

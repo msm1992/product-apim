@@ -53,7 +53,6 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
 import org.wso2.carbon.utils.xml.StringUtils;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -66,6 +65,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javax.ws.rs.core.Response;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -230,7 +230,7 @@ public class WebSocketAPITestCase extends APIMIntegrationBaseTest {
         verifyResponse(updateAPIResponse);
 
         //Get an Access Token from the user who is logged into the API Store.
-        URL tokenEndpointURL = new URL(getGatewayURLNhttp() + "token");
+        URL tokenEndpointURL = new URL(getGatewayBaseURLNhttps() + "token");
         String subsAccessTokenPayload = APIMTestCaseUtils.getPayloadForPasswordGrant(
                 storeContext.getContextTenant().getContextUser().getUserName(),
                 storeContext.getContextTenant().getContextUser().getPassword());

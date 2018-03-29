@@ -25,10 +25,20 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 import org.wso2.am.integration.test.utils.base.APIMIntegrationBaseTest;
 import org.wso2.am.integration.test.utils.base.APIMIntegrationConstants;
-import org.wso2.am.integration.test.utils.bean.*;
+import org.wso2.am.integration.test.utils.bean.APICreationRequestBean;
+import org.wso2.am.integration.test.utils.bean.APILifeCycleState;
+import org.wso2.am.integration.test.utils.bean.APILifeCycleStateRequest;
+import org.wso2.am.integration.test.utils.bean.APIResourceBean;
+import org.wso2.am.integration.test.utils.bean.APIThrottlingTier;
+import org.wso2.am.integration.test.utils.bean.APPKeyRequestGenerator;
+import org.wso2.am.integration.test.utils.bean.SubscriptionRequest;
 import org.wso2.am.integration.test.utils.clients.APIPublisherRestClient;
 import org.wso2.am.integration.test.utils.clients.APIStoreRestClient;
 import org.wso2.am.integration.test.utils.http.HTTPSClientUtils;
@@ -38,7 +48,6 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.http.client.HttpResponse;
 
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,8 +104,8 @@ public class GrantTypeTokenGenerateTestCase extends APIMIntegrationBaseTest {
         apiPublisher.login(user.getUserName(), user.getPassword());
         apiStore = new APIStoreRestClient(storeURLHttp);
         apiStore.login(user.getUserName(), user.getPassword());
-        authorizeURL = gatewayUrlsWrk.getWebAppURLNhttps() + "/authorize";
-        tokenURL = gatewayUrlsWrk.getWebAppURLNhttps() + "/token";
+        authorizeURL = getGatewayBaseURLNhttps() + "authorize";
+        tokenURL = getGatewayBaseURLNhttps() + "token";
         identityLoginURL = getKeyManagerURLHttps() + "/oauth2/authorize";
     }
 
