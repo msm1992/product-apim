@@ -72,7 +72,7 @@ public class GIT2231HeadRequestNPEErrorTestCase extends APIMIntegrationBaseTest 
         HttpUriRequest head = new HttpHead(apiInvocationUrl);
 
         HttpResponse httpResponse = httpclient.execute(head);
-        Assert.assertEquals(httpResponse.getStatusLine().getStatusCode(), 200);
+        Assert.assertEquals(httpResponse.getStatusLine().getStatusCode(), 204);
     }
 
     @AfterClass(alwaysRun = true)
