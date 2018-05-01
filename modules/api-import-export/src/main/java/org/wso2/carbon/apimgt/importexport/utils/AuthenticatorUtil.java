@@ -18,22 +18,32 @@
 
 package org.wso2.carbon.apimgt.importexport.utils;
 
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.context.ServiceContext;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.internal.ServiceReferenceHolder;
+import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.importexport.APIExportException;
+import org.wso2.carbon.apimgt.importexport.APIImportExportConstants;
+import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.api.AuthorizationManager;
-import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URL;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -72,67 +82,72 @@ public class AuthenticatorUtil {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("No username and password is provided for authentication").type(MediaType.APPLICATION_JSON).
                             build();
-
         }
 
         try {
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-            UserStoreManager userstoremanager =
-                    CarbonContext.getThreadLocalCarbonContext().getUserRealm().getUserStoreManager();
 
-            AuthorizationManager authorizationManager = CarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                    .getAuthorizationManager();
+            APIManagerConfiguration config = ServiceReferenceHolder.getInstance().
+                    getAPIManagerConfigurationService().getAPIManagerConfiguration();
+            String url = config.getFirstProperty(APIConstants.AUTH_MANAGER_URL);
 
-            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
+            AuthenticationAdminStub authAdminStub = new AuthenticationAdminStub(null, url +
+                    APIImportExportConstants.AUTHENTICATION_ADMIN_SERVICE_ENDPOINT);
+            ServiceClient client = authAdminStub._getServiceClient();
+            Options options = client.getOptions();
+            options.setManageSession(true);
 
             //authenticate user provided credentials
-            if (userstoremanager.authenticate(tenantAwareUsername, password)) {
+            String host = new URL(url).getHost();
+            if (authAdminStub.login(username, password, host)) {
                 log.info(username + " user authenticated successfully");
-                //Get admin role name of the current domain
-                String adminRoleName = CarbonContext
-                        .getThreadLocalCarbonContext()
-                        .getUserRealm()
-                        .getRealmConfiguration()
-                        .getAdminRoleName();
 
-                String[] userRoles = userstoremanager.getRoleListOfUser(tenantAwareUsername);
+                ServiceContext serviceContext = authAdminStub.
+                        _getServiceClient().getLastOperationContext().getServiceContext();
+                String sessionCookie = (String) serviceContext.getProperty(HTTPConstants.COOKIE_STRING);
+                String domainAwareUserName = APIUtil.getLoggedInUserInfo(sessionCookie, url).getUserName();
 
-                //user is only authorized for exporting and importing if he is an admin of his
-                // domain
+                // Validation for the admin user of the domain.
+                UserStoreManager userstoremanager =
+                        CarbonContext.getThreadLocalCarbonContext().getUserRealm().getUserStoreManager();
+                String[] userRoles = userstoremanager.getRoleListOfUser(domainAwareUserName);
+                String adminRoleName = CarbonContext.getThreadLocalCarbonContext().getUserRealm()
+                        .getRealmConfiguration().getAdminRoleName();
                 for (String userRole : userRoles) {
                     if (adminRoleName.equalsIgnoreCase(userRole)) {
                         log.info(username + " is authorized to import and export APIs");
                         return Response.ok().build();
                     }
                 }
-                //user is authorized for exporting and importing if he has API-M Admin, API Create and Login permissions.
-                if ((authorizationManager.isUserAuthorized(tenantAwareUsername, APIM_ADMIN_PERMISSION,
+
+                // Validation for a user having API-M Admin, API Create and Login permissions.
+                AuthorizationManager authorizationManager = CarbonContext.getThreadLocalCarbonContext().getUserRealm()
+                        .getAuthorizationManager();
+                if ((authorizationManager.isUserAuthorized(domainAwareUserName, APIM_ADMIN_PERMISSION,
                         CarbonConstants.UI_PERMISSION_ACTION)) && (authorizationManager.isUserAuthorized
-                        (tenantAwareUsername, APIM_LOGIN_PERMISSION, CarbonConstants.UI_PERMISSION_ACTION)) &&
-                        (authorizationManager.isUserAuthorized(tenantAwareUsername, APIM_API_CREATE_PERMISSION,
+                        (domainAwareUserName, APIM_LOGIN_PERMISSION, CarbonConstants.UI_PERMISSION_ACTION)) &&
+                        (authorizationManager.isUserAuthorized(domainAwareUserName, APIM_API_CREATE_PERMISSION,
                                 CarbonConstants.UI_PERMISSION_ACTION))) {
                     log.info(username + " is authorized to import and export APIs");
                     return Response.ok().build();
                 }
 
-                return Response.status(Response.Status.FORBIDDEN).entity("User Authorization " + "Failed")
+                return Response.status(Response.Status.FORBIDDEN).entity("User Authorization Failed")
                         .type(MediaType.APPLICATION_JSON).build();
 
             } else {
-                return Response.status(Response.Status.UNAUTHORIZED).entity("User Authentication " + "Failed")
+                return Response.status(Response.Status.UNAUTHORIZED).entity("User Authentication Failed")
                         .type(MediaType.APPLICATION_JSON).build();
             }
-
-        } catch (UserStoreException e) {
-            String errorMessage = "Error while accessing user configuration";
+        } catch (Exception e) {
+            String errorMessage = "Error while authenticating the user";
             log.error(errorMessage, e);
             throw new APIExportException(errorMessage, e);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
-
     }
 
     /**
