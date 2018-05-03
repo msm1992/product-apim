@@ -58,6 +58,7 @@ public class AuthenticatorUtil {
     private static final String AUTHENTICATION_SCHEME = "Basic";
     private static final Log log = LogFactory.getLog(AuthenticatorUtil.class);
     private static String username;
+    private static String domainAwareUserName;
     private static String password;
     public static final String APIM_ADMIN_PERMISSION = "/permission/admin/manage/apim_admin";
     public static final String APIM_LOGIN_PERMISSION = "/permission/admin/login";
@@ -107,7 +108,7 @@ public class AuthenticatorUtil {
                 ServiceContext serviceContext = authAdminStub.
                         _getServiceClient().getLastOperationContext().getServiceContext();
                 String sessionCookie = (String) serviceContext.getProperty(HTTPConstants.COOKIE_STRING);
-                String domainAwareUserName = APIUtil.getLoggedInUserInfo(sessionCookie, url).getUserName();
+                domainAwareUserName = APIUtil.getLoggedInUserInfo(sessionCookie, url).getUserName();
 
                 // Validation for the admin user of the domain.
                 UserStoreManager userstoremanager =
@@ -196,5 +197,14 @@ public class AuthenticatorUtil {
      */
     public static String getAuthenticatedUserName() {
         return username;
+    }
+
+    /**
+     * Retrieve the domain aware user name of the current user
+     *
+     * @return Domain aware user name
+     */
+    public static String getDomainAwareUserName() {
+        return domainAwareUserName;
     }
 }

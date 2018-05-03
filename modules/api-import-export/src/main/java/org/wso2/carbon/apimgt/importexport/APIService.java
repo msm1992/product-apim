@@ -189,7 +189,9 @@ public class APIService {
             //Process continues only if the user is authorized
             if (Response.Status.OK.getStatusCode() == authorizationResponse.getStatus()) {
 
-                String currentUser = AuthenticatorUtil.getAuthenticatedUserName();
+                String tenantDomain = MultitenantUtils.getTenantDomain(AuthenticatorUtil.getAuthenticatedUserName());
+                String currentUser = APIUtil.appendDomainWithUser(AuthenticatorUtil.getDomainAwareUserName(),
+                        tenantDomain);
                 APIImportUtil.initializeProvider(currentUser);
 
                 //Temporary directory is used to create the required folders
@@ -210,7 +212,6 @@ public class APIService {
                     String extractedFolderName = APIImportUtil.extractArchive(
                             new File(absolutePath + uploadFileName), absolutePath);
 
-                    String tenantDomain = MultitenantUtils.getTenantDomain(currentUser);
                     if (tenantDomain != null &&
                         !org.wso2.carbon.utils.multitenancy.MultitenantConstants.SUPER_TENANT_DOMAIN_NAME
                                 .equals(tenantDomain)) {
