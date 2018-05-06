@@ -57,11 +57,9 @@ public class AuthenticatorUtil {
     private static final String AUTHORIZATION_PROPERTY = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Basic";
     private static final Log log = LogFactory.getLog(AuthenticatorUtil.class);
-    private static String username;
-    private static String password;
-    public static final String APIM_ADMIN_PERMISSION = "/permission/admin/manage/apim_admin";
-    public static final String APIM_LOGIN_PERMISSION = "/permission/admin/login";
-    public static final String APIM_API_CREATE_PERMISSION = "/permission/admin/manage/api/create";
+    private static final String APIM_ADMIN_PERMISSION = "/permission/admin/manage/apim_admin";
+    private static final String APIM_LOGIN_PERMISSION = "/permission/admin/login";
+    private static final String APIM_API_CREATE_PERMISSION = "/permission/admin/manage/api/create";
 
     private AuthenticatorUtil() {
     }
@@ -77,7 +75,12 @@ public class AuthenticatorUtil {
      */
 
     public static Response authorizeUser(HttpHeaders headers) throws APIExportException {
-        if (!isValidCredentials(headers)) {
+
+        AuthenticationContext authenticationContext = getAuthenticationContext(headers);
+        String username = authenticationContext.getUsername();
+        String password = authenticationContext.getPassword();
+
+        if (username == null || password == null) {
             log.error("No username and password is provided for authentication");
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("No username and password is provided for authentication").type(MediaType.APPLICATION_JSON).
@@ -108,6 +111,7 @@ public class AuthenticatorUtil {
                         _getServiceClient().getLastOperationContext().getServiceContext();
                 String sessionCookie = (String) serviceContext.getProperty(HTTPConstants.COOKIE_STRING);
                 String domainAwareUserName = APIUtil.getLoggedInUserInfo(sessionCookie, url).getUserName();
+                authenticationContext.setDomainAwareUsername(domainAwareUserName);
 
                 // Validation for the admin user of the domain.
                 UserStoreManager userstoremanager =
@@ -118,7 +122,7 @@ public class AuthenticatorUtil {
                 for (String userRole : userRoles) {
                     if (adminRoleName.equalsIgnoreCase(userRole)) {
                         log.info(username + " is authorized to import and export APIs");
-                        return Response.ok().build();
+                        return Response.ok().entity(authenticationContext).build();
                     }
                 }
 
@@ -131,7 +135,7 @@ public class AuthenticatorUtil {
                         (authorizationManager.isUserAuthorized(domainAwareUserName, APIM_API_CREATE_PERMISSION,
                                 CarbonConstants.UI_PERMISSION_ACTION))) {
                     log.info(username + " is authorized to import and export APIs");
-                    return Response.ok().build();
+                    return Response.ok().entity(authenticationContext).build();
                 }
 
                 return Response.status(Response.Status.FORBIDDEN).entity("User Authorization Failed")
@@ -151,21 +155,21 @@ public class AuthenticatorUtil {
     }
 
     /**
-     * Checks whether user has provided non blank username and password for authentication
+     * Extracts the user provided username and password for authentication.
      *
      * @param headers Http Headers of the request
-     * @return boolean Whether a user name and password has been provided for authentication
-     * @throws APIExportException If an error occurs while extracting username and password from
-     *                            the header
+     * @return AuthenticationContext including the username and password
+     * @throws APIExportException If an error occurs while extracting username and password from the header
      */
-    private static boolean isValidCredentials(HttpHeaders headers) throws APIExportException {
+    private static AuthenticationContext getAuthenticationContext(HttpHeaders headers) throws APIExportException {
 
+        AuthenticationContext authenticationContext = new AuthenticationContext();
         //Fetch authorization header
         final List<String> authorization = headers.getRequestHeader(AUTHORIZATION_PROPERTY);
 
-        //If no authorization information present; block access
+        //If no authorization information present, return an empty authentication context
         if (authorization == null || authorization.isEmpty()) {
-            return false;
+            return authenticationContext;
         }
 
         //Get encoded username and password
@@ -178,23 +182,9 @@ public class AuthenticatorUtil {
         if (usernameAndPassword != null) {
             //Split username and password tokens
             final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
-            username = tokenizer.nextToken();
-            password = tokenizer.nextToken();
-
-            if (username != null && password != null) {
-                return true;
-            }
+            authenticationContext.setUsername(tokenizer.nextToken());
+            authenticationContext.setPassword(tokenizer.nextToken());
         }
-
-        return false;
-    }
-
-    /**
-     * Retrieve authenticated user name for the current session
-     *
-     * @return User name
-     */
-    public static String getAuthenticatedUserName() {
-        return username;
+        return authenticationContext;
     }
 }

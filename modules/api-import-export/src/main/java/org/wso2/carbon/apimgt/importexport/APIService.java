@@ -1,5 +1,4 @@
 /*
- *
  *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +16,6 @@
  */
 
 package org.wso2.carbon.apimgt.importexport;
-
-
-import com.google.gson.Gson;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,6 +36,7 @@ import java.io.InputStream;
 import org.wso2.carbon.apimgt.importexport.utils.APIExportUtil;
 import org.wso2.carbon.apimgt.importexport.utils.APIImportUtil;
 import org.wso2.carbon.apimgt.importexport.utils.ArchiveGeneratorUtil;
+import org.wso2.carbon.apimgt.importexport.utils.AuthenticationContext;
 import org.wso2.carbon.apimgt.importexport.utils.AuthenticatorUtil;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
@@ -78,7 +75,6 @@ public class APIService {
     public Response exportAPI(@QueryParam("name") String name, @QueryParam("version") String version,
             @QueryParam("provider") String providerName, @Context HttpHeaders httpHeaders) {
 
-        String userName;
         if (name == null || version == null || providerName == null) {
             log.error("Invalid API Information ");
 
@@ -95,8 +91,8 @@ public class APIService {
             if (!(Response.Status.OK.getStatusCode() == authorizationResponse.getStatus())) {
                 return authorizationResponse;
             }
-
-            userName = AuthenticatorUtil.getAuthenticatedUserName();
+            AuthenticationContext authenticationContext = (AuthenticationContext) authorizationResponse.getEntity();
+            String userName = authenticationContext.getUsername();
             //provider names with @ signs are only accepted
             String apiDomain = MultitenantUtils.getTenantDomain(providerName);
             String apiRequesterDomain = MultitenantUtils.getTenantDomain(userName);
@@ -189,7 +185,10 @@ public class APIService {
             //Process continues only if the user is authorized
             if (Response.Status.OK.getStatusCode() == authorizationResponse.getStatus()) {
 
-                String currentUser = AuthenticatorUtil.getAuthenticatedUserName();
+                AuthenticationContext authenticationContext = (AuthenticationContext) authorizationResponse.getEntity();
+                String tenantDomain = MultitenantUtils.getTenantDomain(authenticationContext.getUsername());
+                String currentUser = APIUtil.appendDomainWithUser(authenticationContext.getDomainAwareUsername(),
+                        tenantDomain);
                 APIImportUtil.initializeProvider(currentUser);
 
                 //Temporary directory is used to create the required folders
@@ -210,7 +209,6 @@ public class APIService {
                     String extractedFolderName = APIImportUtil.extractArchive(
                             new File(absolutePath + uploadFileName), absolutePath);
 
-                    String tenantDomain = MultitenantUtils.getTenantDomain(currentUser);
                     if (tenantDomain != null &&
                         !org.wso2.carbon.utils.multitenancy.MultitenantConstants.SUPER_TENANT_DOMAIN_NAME
                                 .equals(tenantDomain)) {
