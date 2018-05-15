@@ -187,8 +187,11 @@ public class APIService {
 
                 AuthenticationContext authenticationContext = (AuthenticationContext) authorizationResponse.getEntity();
                 String tenantDomain = MultitenantUtils.getTenantDomain(authenticationContext.getUsername());
-                String currentUser = APIUtil.appendDomainWithUser(authenticationContext.getDomainAwareUsername(),
-                        tenantDomain);
+                String currentUser = authenticationContext.getDomainAwareUsername();
+
+                if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                    currentUser = currentUser + "@" + tenantDomain;
+                }
                 APIImportUtil.initializeProvider(currentUser);
 
                 //Temporary directory is used to create the required folders
