@@ -32,6 +32,7 @@ import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.definitions.APIDefinitionFromSwagger20;
+import org.wso2.carbon.apimgt.impl.utils.APIMgtDBUtil;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.migration.APIMigrationException;
 import org.wso2.carbon.apimgt.migration.client._110Specific.dto.SwaggerInfoDTO;
@@ -45,6 +46,15 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
+import org.wso2.carbon.identity.application.common.model.InboundAuthenticationConfig;
+import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRequestConfig;
+import org.wso2.carbon.identity.application.common.model.InboundProvisioningConfig;
+import org.wso2.carbon.identity.application.common.model.OutboundProvisioningConfig;
+import org.wso2.carbon.identity.application.common.model.PermissionsAndRoleConfig;
+import org.wso2.carbon.identity.application.common.model.Property;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.application.common.model.User;
+import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.ActionConstants;
@@ -54,7 +64,9 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -74,6 +86,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -287,6 +302,7 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
                                 artifact.setAttribute("overview_contextTemplate", api.getContext() +
                                         RegistryConstants.PATH_SEPARATOR + "{version}");
                             }
+
 
                             artifact.setAttribute("overview_environments", "");
                             artifact.setAttribute("overview_versionType", "context");
@@ -1125,6 +1141,11 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
     }
 
     @Override
+    public void tierMigration(List<String> options) throws APIMigrationException {
+        //no implementation is required
+    }
+
+    @Override
     public void optionalMigration(List<String> options) throws APIMigrationException {
         //no implementation is required
     }
@@ -1239,5 +1260,254 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
                 log.debug("End synapseAPIMigration for tenant " + tenant.getId() + '(' + tenant.getDomain() + ')');
             }
         }
+    }
+
+	@Override
+	public void updateArtifacts() throws APIMigrationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+    public void populateSPAPPs() throws APIMigrationException {
+        fixConsumerAppTable();
+        updateMetaDataTable();
+    }
+
+    /**
+     * This method will be used to populate SP_APP table
+     */
+    public void populateSPAPPTable(ResultSet resultSet) throws APIMigrationException {
+
+        ApplicationManagementService applicationManagementService = ServiceHolder.getApplicationManagementService();
+        String app_name, username;
+        try {
+            if (resultSet.next()) {
+                app_name = resultSet.getString(1);
+                username = resultSet.getString(2);
+
+                ServiceProvider sp = new ServiceProvider();
+                sp.setApplicationName(app_name);
+                String userDomain = UserCoreUtil.extractDomainFromName(username);
+                String tenantDomain = MultitenantUtils.getTenantDomain(username);
+                String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
+                String userName1 = UserCoreUtil.removeDomainFromName(tenantAwareUsername);
+                int tenantID = ServiceHolder.getRealmService().getTenantManager().getTenantId(tenantDomain);
+
+                try {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext threadLocalCarbonContext = PrivilegedCarbonContext
+                            .getThreadLocalCarbonContext();
+                    threadLocalCarbonContext.setTenantDomain(tenantDomain);
+                    threadLocalCarbonContext.setUsername(tenantAwareUsername);
+                    threadLocalCarbonContext.setTenantId(tenantID);
+
+                    User owner = new User();
+                    owner.setUserName(userName1);
+                    owner.setTenantDomain(tenantDomain);
+                    owner.setUserStoreDomain(userDomain);
+                    sp.setOwner(owner);
+                    applicationManagementService.createApplication(sp, tenantDomain, userName1);
+                    ServiceProvider serviceProvider = applicationManagementService
+                            .getServiceProvider(app_name, tenantDomain);
+                    sp.setApplicationID(serviceProvider.getApplicationID());
+
+                    InboundAuthenticationConfig inboundAuthenticationConfig = new InboundAuthenticationConfig();
+                    InboundAuthenticationRequestConfig[] inboundAuthenticationRequestConfigs = new InboundAuthenticationRequestConfig[1];
+                    InboundAuthenticationRequestConfig inboundAuthenticationRequestConfig = new InboundAuthenticationRequestConfig();
+                    inboundAuthenticationRequestConfig.setInboundAuthKey(resultSet.getString(3));
+                    inboundAuthenticationRequestConfig.setInboundAuthType("oauth2");
+                    Property[] properties = new Property[1];
+                    Property property1 = new Property();
+                    property1.setName("oauthConsumerSecret");
+                    property1.setValue(resultSet.getString(4));
+                    properties[0] = property1;
+                    inboundAuthenticationRequestConfig.setProperties(properties);
+                    inboundAuthenticationRequestConfigs[0] = inboundAuthenticationRequestConfig;
+                    inboundAuthenticationConfig
+                            .setInboundAuthenticationRequestConfigs(inboundAuthenticationRequestConfigs);
+                    sp.setInboundAuthenticationConfig(inboundAuthenticationConfig);
+                    OutboundProvisioningConfig outboundProvisioningConfig = new OutboundProvisioningConfig();
+                    sp.setOutboundProvisioningConfig(outboundProvisioningConfig);
+                    InboundProvisioningConfig inboundProvisioningConfig = new InboundProvisioningConfig();
+                    sp.setInboundProvisioningConfig(inboundProvisioningConfig);
+                    PermissionsAndRoleConfig permissionsAndRoleConfig = new PermissionsAndRoleConfig();
+                    sp.setPermissionAndRoleConfig(permissionsAndRoleConfig);
+                    applicationManagementService.updateApplication(sp, tenantDomain, userName1);
+                } catch (Exception e) {
+                    log.error("Error while populating SP_APP table.", e);
+                } finally {
+                    PrivilegedCarbonContext.endTenantFlow();
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while populating SP_APP table.", e);
+        }
+    }
+
+    /**
+     * This method will format the APP_NAME IN IDN_OAUTH_CONSUMER_APPS table according to the 1.9 format
+     */
+    public void fixConsumerAppTable() throws APIMigrationException {
+
+        PreparedStatement preparedStatement = null, prepStmt = null, preparedStatement1 = null, preparedStatement2 = null;
+        Connection connection = null;
+        String sql = null, sqlType = null;
+        ResultSet resultSet = null, resultSet1 = null, resultSet2 = null;
+        try {
+            connection = APIMgtDBUtil.getConnection();
+            String sqlQuery = "SELECT CONSUMER_KEY,USERNAME,APP_NAME FROM IDN_OAUTH_CONSUMER_APPS";
+            preparedStatement = connection.prepareStatement(sqlQuery.trim());
+            resultSet = preparedStatement.executeQuery();
+
+            String mySQL = "UPDATE IDN_OAUTH_CONSUMER_APPS C SET C.APP_NAME="
+                    + "CONCAT(SUBSTRING_INDEX(C.USERNAME, '@', ?),'_',C.APP_NAME,'_',(SELECT KEY_TYPE FROM "
+                    + "AM_APPLICATION_KEY_MAPPING WHERE AM_APPLICATION_KEY_MAPPING.CONSUMER_KEY=?"
+                    + ")) WHERE C.CONSUMER_KEY=?";
+            String oracleSQL = "UPDATE IDN_OAUTH_CONSUMER_APPS C SET APP_NAME="
+                    + "CONCAT((case when USERNAME like '%@%' then SUBSTR(USERNAME, 0, INSTR(USERNAME, '@', -1, 1)-1) "
+                    + "else USERNAME end),CONCAT('_',CONCAT(APP_NAME,CONCAT('_',(SELECT KEY_TYPE FROM "
+                    + "AM_APPLICATION_KEY_MAPPING WHERE AM_APPLICATION_KEY_MAPPING.CONSUMER_KEY=?))))) "
+                    + "WHERE CONSUMER_KEY=?";
+            String postgreSQL = "UPDATE IDN_OAUTH_CONSUMER_APPS C SET APP_NAME=CONCAT(left(USERNAME, length(USERNAME) "
+                    + "- strpos(reverse(USERNAME), '@') ),'_',APP_NAME,'_',(SELECT KEY_TYPE FROM "
+                    + "AM_APPLICATION_KEY_MAPPING WHERE AM_APPLICATION_KEY_MAPPING.CONSUMER_KEY=?)) "
+                    + "WHERE CONSUMER_KEY=?";
+
+            if (connection.getMetaData().getDriverName().contains("MySQL") || connection.getMetaData().getDriverName()
+                    .contains("H2")) {
+                sql = mySQL;
+                sqlType = "MySQL";
+            } else if (connection.getMetaData().getDriverName().contains("PostgreSQL")) {
+                sql = postgreSQL;
+                sqlType = "PostgreSQL";
+            } else if (connection.getMetaData().getDriverName().contains("Oracle")) {
+                sql = oracleSQL;
+                sqlType = "Oracle";
+            }
+
+            while (resultSet.next()) {
+
+                String checkAppExist = "SELECT * FROM SP_INBOUND_AUTH WHERE INBOUND_AUTH_KEY=?";
+
+                preparedStatement1 = connection.prepareStatement(checkAppExist.trim());
+                preparedStatement1.setString(1, resultSet.getString(1));
+                resultSet1 = preparedStatement1.executeQuery();
+
+                if (!resultSet1.next()) {
+
+                    prepStmt = connection.prepareStatement(sql.trim());
+                    connection.setAutoCommit(false);
+
+                    if (sqlType.equals("MySQL")) {
+                        String userName = resultSet.getString(2);
+                        if (userName.indexOf("@", userName.indexOf("@") + 1) > 0) {
+                            prepStmt.setInt(1, 2);
+                        } else {
+                            prepStmt.setInt(1, 1);
+                        }
+                        prepStmt.setString(2, resultSet.getString(1));
+                        prepStmt.setString(3, resultSet.getString(1));
+                    } else if (sqlType.equals("PostgreSQL") || sqlType.equals("Oracle")) {
+                        prepStmt.setString(1, resultSet.getString(1));
+                        prepStmt.setString(2, resultSet.getString(1));
+                    }
+                    prepStmt.execute();
+                    connection.commit();
+
+                    String getUpdatedAppDetails = "SELECT APP_NAME,USERNAME,CONSUMER_KEY,CONSUMER_SECRET FROM "
+                            + "IDN_OAUTH_CONSUMER_APPS WHERE CONSUMER_KEY=?";
+
+                    preparedStatement2 = connection.prepareStatement(getUpdatedAppDetails.trim());
+                    preparedStatement2.setString(1, resultSet.getString(1));
+                    resultSet2 = preparedStatement2.executeQuery();
+                    populateSPAPPTable(resultSet2);
+
+                }
+
+                //closing connections
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (preparedStatement1 != null) {
+                    preparedStatement1.close();
+                }
+                if (preparedStatement2 != null) {
+                    preparedStatement2.close();
+                }
+                if (resultSet1 != null) {
+                    resultSet1.close();
+                }
+                if (resultSet2 != null) {
+                    resultSet2.close();
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Error while updating IDN_OAUTH_CONSUMER_APPS table.", e);
+        } catch (APIMigrationException e) {
+            log.error("Error while updating IDN_OAUTH_CONSUMER_APPS table.", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (preparedStatement1 != null) {
+                    preparedStatement1.close();
+                }
+                if (preparedStatement2 != null) {
+                    preparedStatement2.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (resultSet1 != null) {
+                    resultSet1.close();
+                }
+                if (resultSet2 != null) {
+                    resultSet2.close();
+                }
+            } catch (SQLException e) {
+                log.error("Error while closing the stream.", e);
+            }
+        }
+    }
+
+    public void updateMetaDataTable() throws APIMigrationException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = APIMgtDBUtil.getConnection();
+            String sqlQuery = "INSERT INTO SP_METADATA ( SP_ID, NAME, VALUE, DISPLAY_NAME, TENANT_ID ) SELECT DISTINCT "
+                    + "SP_APP.ID, 'DisplayName', AM_APPLICATION.NAME, NULL, SP_APP.TENANT_ID FROM SP_APP, "
+                    + "IDN_OAUTH_CONSUMER_APPS, AM_APPLICATION_KEY_MAPPING, AM_APPLICATION WHERE "
+                    + "IDN_OAUTH_CONSUMER_APPS.CONSUMER_KEY = AM_APPLICATION_KEY_MAPPING.CONSUMER_KEY AND "
+                    + "IDN_OAUTH_CONSUMER_APPS.APP_NAME = SP_APP.APP_NAME AND AM_APPLICATION.APPLICATION_ID = "
+                    + "AM_APPLICATION_KEY_MAPPING.APPLICATION_ID AND IDN_OAUTH_CONSUMER_APPS.TENANT_ID = "
+                    + "SP_APP.TENANT_ID AND SP_APP.ID NOT IN (SELECT SP_ID FROM SP_METADATA)";
+            preparedStatement = connection.prepareStatement(sqlQuery.trim());
+            preparedStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            log.error("Error while updating MetaData table.", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                log.error("Error while closing the stream.", e);
+            }
+        }
+
     }
 }

@@ -16,6 +16,7 @@
 package org.wso2.carbon.apimgt.migration.client.internal;
 
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -33,6 +34,9 @@ public class ServiceHolder {
     
     //APIM Configuration service to read api-manager.xml
     private static APIManagerConfigurationService amConfigurationService;
+
+    private static ApplicationManagementService applicationManagementService;
+    //private static IdentityUtil identityUtil;
 
     /**
      * Method to get RegistryService.
@@ -102,5 +106,21 @@ public class ServiceHolder {
      */
     public static void setAPIManagerConfigurationService(APIManagerConfigurationService amConfigService) {
         amConfigurationService = amConfigService;
+    }
+
+    /**
+     * This method is used to get ApplicationManagementService
+     * @return
+     */
+    public static ApplicationManagementService getApplicationManagementService() {
+        return applicationManagementService;
+    }
+
+    /**
+     * This method is used to set ApplicationManagementService
+     * @param service
+     */
+    public static void setApplicationManagementService(ApplicationManagementService service) {
+        applicationManagementService = service;
     }
 }

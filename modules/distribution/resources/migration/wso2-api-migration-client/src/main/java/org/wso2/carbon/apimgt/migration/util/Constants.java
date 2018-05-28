@@ -57,6 +57,9 @@ public class Constants {
     public static final String ARG_MIGRATE_FILE_SYSTEM = "migrateFS";
     public static final String ARG_MIGRATE_STATS = "migrateStats";
     public static final String ARG_REMOVE_DECRYPTION_FAILED_CONSUMER_KEYS_FROM_DB = "removeDecryptionFailedKeysFromDB";
+    public static final String ARG_OPTIONS_MIGRATE_THROTTLING = "migrateThrottling";
+    public static final String ARG_OPTIONS_DEPLOY_POLICIES = "deployPolicies";
+    public static final String ARG_POPULATE_SPAPP = "populateSPAPP";
 
     // Synapse configuration related
     public static final String SYNAPSE_API_ROOT_ELEMENT = "api";
@@ -87,6 +90,7 @@ public class Constants {
     public static final String NEW_SYNAPSE_API_VALUE_THROTTLE_HANDLER = "org.wso2.carbon.apimgt.gateway.handlers.throttling.ThrottleHandler";
     public static final String SYNAPSE_API_VALUE_LATENCY_STATS_HANDLER = "org.wso2.carbon.apimgt.gateway.handlers.common.APIMgtLatencyStatsHandler";
     public static final String SYNAPSE_API_VALUE_INLINE = "inline";
+    public static final String SYNAPSE_API_VALUE_IMPLEMENTATION_TYPE = "apiImplementationType";
     public static final String SYNAPSE_API_VALUE_INLINE_UPPERCASE = "INLINE";
     public static final String SYNAPSE_API_VALUE_ENPOINT = "ENDPOINT";
     public static final String SYNAPSE_API_VALUE_VERSION_TYPE_URL = "url";
@@ -184,6 +188,13 @@ public class Constants {
     public static final String TIER_ATTRIBUTES_TAG = "Attributes";
     public static final String TIER_BILLING_PLAN_FREE = "FREE";
     public static final String TIER_STOP_ON_QUOTA_TRUE = "true";
+    public static final String TIER_ID_TAG = "ID";
+    public static final String TIER_MAX_COUNT_TAG = "MaximumCount";
+    public static final String TIER_UNIT_COUNT_TAG = "UnitTime";
+    public static final String TIER_BILLING_PLAN_TAG = "x-wso2-BillingPlan";
+    public static final String TIER_STOP_ON_QUOTA_TAG = "x-wso2-StopOnQuotaReach";
+    public static final String TIER_DESCRIPTION_TAG = "Description";
+
 
     //database types
     public static final String DB_TYPE_ORACLE = "oracle";
@@ -235,6 +246,9 @@ public class Constants {
 	public static final String API_KEY_VALIDATOR_ENCRYPT_TOKENS =
             APIConstants.API_KEY_VALIDATOR + "EncryptPersistedTokens";
 
+    public static final String THROTTLING_CONFIGURATIONS ="ThrottlingConfigurations.";
+    public static final String ENABLE_THROTTLING_CONFIGURATIONS =THROTTLING_CONFIGURATIONS + "EnableAdvanceThrottling";
+
     public static final String SECURITY_DEFINITION__KEY = "securityDefinitions";
     public static final String SECURITY_DEFINITION_TYPE_KEY = "type";
     public static final String SECURITY_DEFINITION_AUTHORIZATION_URL_KEY = "authorizationUrl";
@@ -249,6 +263,10 @@ public class Constants {
 
     public static final String SWAGGER_PATH_SECURITY_KEY = "security";
     public static final String SWAGGER_PATH_PARAMETERS_KEY = "parameters";
+    public static final String SWAGGER_PAYLOAD_KEY = "payload";
+    public static final String SWAGGER_PROPERTIES_KEY = "properties";
+    public static final String SWAGGER_STRING_TYPE = "string";
+
     public static final String SYNAPSE_ENDPOINT_XML_ELEMENT = "endpoint";
     public static final String SYNAPSE_FAIL_OVER_XML_ELEMENT = "failover";
     public static final String SYNAPSE_LOAD_BALANCE_XML_ELEMENT = "loadbalance";
@@ -256,5 +274,20 @@ public class Constants {
     public static final String SYNAPSE_HTTP_XML_ELEMENT = "http";
     public static final String SYNAPSE_URI_TEMPLATE_ATTRIBUTE_NAME = "uri-template";
     public static final String SYNAPSE_IS_STAT_ENABLED_PROPERTY_NAME = "isStatEnabled";
+
+
+    // Table Names
+
+    public static final String AM_POLICY_SUBSCRIPTION = "AM_POLICY_SUBSCRIPTION";
+    public static final String AM_POLICY_APPLICATION = "AM_POLICY_APPLICATION";
+    public static final String AM_API_THROTTLE_POLICY = "AM_API_THROTTLE_POLICY";
+
+
+
+    public static final String TIER_DESCRIPTION = "Allows {0} request per minute";
+    public static final String TIER_API_LEVEL = "apiLevel";
+    public static final String TIER_REQUEST_COUNT = "requestCount";
+    public static final String TIER_TIME_UNIT_MINUTE = "min";
+
 
 }
