@@ -216,7 +216,7 @@ public class APIExportUtil {
         exportSequences(apiToReturn, apiID, registry);
 
         //set API status to created
-        apiToReturn.setStatus(APIStatus.CREATED);
+        apiToReturn.setStatus(APIConstants.CREATED);
 
         //export meta information
         exportMetaInformation(apiToReturn, registry);
