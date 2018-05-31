@@ -1272,7 +1272,7 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
             if (resultSet.next()) {
                 app_name = resultSet.getString(1);
                 username = resultSet.getString(2);
-
+                app_name = app_name.replaceAll("^[^a-zA-Z_]|(?<!^)[^a-zA-Z0-9 ._-]", "_");
                 ServiceProvider sp = new ServiceProvider();
                 sp.setApplicationName(app_name);
                 String userDomain = UserCoreUtil.extractDomainFromName(username);
@@ -1472,6 +1472,7 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
 
         try {
             connection = APIMgtDBUtil.getConnection();
+            connection.setAutoCommit(false);
             String sqlQuery = "INSERT INTO SP_METADATA ( SP_ID, NAME, VALUE, DISPLAY_NAME, TENANT_ID ) SELECT DISTINCT "
                     + "SP_APP.ID, 'DisplayName', AM_APPLICATION.NAME, NULL, SP_APP.TENANT_ID FROM SP_APP, "
                     + "IDN_OAUTH_CONSUMER_APPS, AM_APPLICATION_KEY_MAPPING, AM_APPLICATION WHERE "

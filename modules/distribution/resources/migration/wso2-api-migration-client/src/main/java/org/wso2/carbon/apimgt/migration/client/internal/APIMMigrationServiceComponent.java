@@ -27,6 +27,7 @@ import org.wso2.carbon.apimgt.migration.client.MigrationExecutor;
 import org.wso2.carbon.apimgt.migration.util.Constants;
 import org.wso2.carbon.apimgt.migration.util.RegistryServiceImpl;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
+import org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -55,6 +56,9 @@ import java.sql.SQLException;
  * interface="org.wso2.carbon.identity.application.mgt.ApplicationManagementService"
  * cardinality="1..1" policy="dynamic" bind="setApplicationManagementService"
  * unbind="unsetApplicationManagementService"
+ * @scr.reference name="identityCoreInitializedEventService"
+ * interface="org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent" cardinality="1..1"
+ * policy="dynamic" bind="setIdentityCoreInitializedEventService" unbind="unsetIdentityCoreInitializedEventService"
  */
 
 @SuppressWarnings("unused")
@@ -246,5 +250,15 @@ public class APIMMigrationServiceComponent {
             log.debug("Un-setting setApplicationManagementService");
         }
         ServiceHolder.setApplicationManagementService(null);
+    }
+
+    protected void unsetIdentityCoreInitializedEventService(IdentityCoreInitializedEvent identityCoreInitializedEvent) {
+        /* reference IdentityCoreInitializedEvent service to guarantee that this component will wait until identity core
+         is started */
+    }
+
+    protected void setIdentityCoreInitializedEventService(IdentityCoreInitializedEvent identityCoreInitializedEvent) {
+        /* reference IdentityCoreInitializedEvent service to guarantee that this component will wait until identity core
+         is started */
     }
 }
