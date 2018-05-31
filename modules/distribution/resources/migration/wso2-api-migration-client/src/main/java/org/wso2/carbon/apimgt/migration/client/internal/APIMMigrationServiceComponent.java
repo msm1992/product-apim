@@ -26,7 +26,6 @@ import org.wso2.carbon.apimgt.migration.client.MigrationClientFactory;
 import org.wso2.carbon.apimgt.migration.client.MigrationExecutor;
 import org.wso2.carbon.apimgt.migration.util.Constants;
 import org.wso2.carbon.apimgt.migration.util.RegistryServiceImpl;
-import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;

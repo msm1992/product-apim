@@ -303,7 +303,6 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
                                         RegistryConstants.PATH_SEPARATOR + "{version}");
                             }
 
-
                             artifact.setAttribute("overview_environments", "");
                             artifact.setAttribute("overview_versionType", "context");
                             artifact.setAttribute("overview_endpointURL", null);
@@ -1141,11 +1140,6 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
     }
 
     @Override
-    public void tierMigration(List<String> options) throws APIMigrationException {
-        //no implementation is required
-    }
-
-    @Override
     public void optionalMigration(List<String> options) throws APIMigrationException {
         //no implementation is required
     }
@@ -1261,12 +1255,6 @@ public class MigrateFrom18to19 extends MigrationClientBase implements MigrationC
             }
         }
     }
-
-	@Override
-	public void updateArtifacts() throws APIMigrationException {
-		// TODO Auto-generated method stub
-		
-	}
 
     public void populateSPAPPs() throws APIMigrationException {
         fixConsumerAppTable();

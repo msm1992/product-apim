@@ -69,6 +69,13 @@ public class MigrateFrom200to210 extends MigrationClientBase implements Migratio
         log.info("No optional migration required to migrate from APIM 2.0.0 to 2.1.0");
     }
 
+    /**
+     *This method will be used to populate SP_APP table
+     */
+    public void populateSPAPPs() throws APIMigrationException {
+
+    }
+
     private void migrateFaultSequencesInRegistry() {
         // change the APIMgtFaultHandler class name in debug_json_fault.xml and json_fault.xml
         // this method will read the new *json_fault.xml sequences from

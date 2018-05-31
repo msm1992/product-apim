@@ -822,12 +822,6 @@ public class MigrateFrom19to110 extends MigrationClientBase implements Migration
         }
     }
 
-	@Override
-	public void updateArtifacts() throws APIMigrationException {
-		// TODO Auto-generated method stub
-		
-	}
-
     /**
      *This method will be used to populate SP_APP table
      */
