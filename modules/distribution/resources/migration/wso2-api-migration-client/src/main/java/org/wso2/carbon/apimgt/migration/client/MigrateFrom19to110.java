@@ -821,4 +821,11 @@ public class MigrateFrom19to110 extends MigrationClientBase implements Migration
                     APIConstants.API_LIFE_CYCLE + " for tenant " + tenant.getId() + '(' + tenant.getDomain() + ')', e);
         }
     }
+
+    /**
+     *This method will be used to populate SP_APP table
+     */
+    public void populateSPAPPs() throws APIMigrationException {
+
+    }
 }

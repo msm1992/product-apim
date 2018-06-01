@@ -57,6 +57,7 @@ public class Constants {
     public static final String ARG_MIGRATE_FILE_SYSTEM = "migrateFS";
     public static final String ARG_MIGRATE_STATS = "migrateStats";
     public static final String ARG_REMOVE_DECRYPTION_FAILED_CONSUMER_KEYS_FROM_DB = "removeDecryptionFailedKeysFromDB";
+    public static final String ARG_POPULATE_SPAPP = "populateSPAPP";
 
     // Synapse configuration related
     public static final String SYNAPSE_API_ROOT_ELEMENT = "api";

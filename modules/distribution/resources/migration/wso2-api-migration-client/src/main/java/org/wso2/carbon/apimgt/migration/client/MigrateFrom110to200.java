@@ -530,4 +530,11 @@ public class MigrateFrom110to200 extends MigrationClientBase implements Migratio
         log.info("Rxt resource migration done for all the tenants");
     }
 
+    /**
+     *This method will be used to populate SP_APP table
+     */
+    public void populateSPAPPs() throws APIMigrationException {
+
+    }
+
 }

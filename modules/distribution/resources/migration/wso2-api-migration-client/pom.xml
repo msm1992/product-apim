@@ -199,6 +199,11 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity</groupId>
+            <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>
+            <version>5.2.0</version>
+        </dependency>
     </dependencies>
 
     <properties>

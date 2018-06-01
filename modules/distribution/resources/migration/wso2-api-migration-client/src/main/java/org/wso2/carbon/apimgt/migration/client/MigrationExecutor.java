@@ -42,6 +42,7 @@ public final class MigrationExecutor {
         private boolean isRegistryMigration;
         private boolean isFileSystemMigration;
         private boolean isStatMigration;
+        private boolean isSP_APP_Population;
 
         public void setMigrateAll(boolean migrateAll) {
             this.migrateAll = migrateAll;
@@ -85,6 +86,10 @@ public final class MigrationExecutor {
 
         public void setOptions(String options) {
             this.options = options;
+        }
+
+        public void setSP_APP_Migration(boolean isSP_APP_Population) {
+            this.isSP_APP_Population = isSP_APP_Population;
         }
     }
 
@@ -137,6 +142,7 @@ public final class MigrationExecutor {
             migrationClient.databaseMigration();
             migrationClient.registryResourceMigration();
             migrationClient.fileSystemMigration();
+            migrationClient.populateSPAPPs();
         } else {
             //Only performs database migration
             if (arguments.isDBMigration) {
@@ -153,13 +159,17 @@ public final class MigrationExecutor {
                 log.info("Migrating WSO2 API Manager file system resources");
                 migrationClient.fileSystemMigration();
             }
+            //only populate SP_APP table
+            if (arguments.isSP_APP_Population) {
+                log.info("Populating SP_APP table");
+                migrationClient.populateSPAPPs();
+            }
         }
         //Old resource cleanup
         if (arguments.cleanupNeeded) {
             migrationClient.cleanOldResources();
             log.info("Old resources cleaned up.");
         }
-
         if (arguments.isStatMigration) {
             StatDBUtil.initialize();
             migrationClient.statsMigration();

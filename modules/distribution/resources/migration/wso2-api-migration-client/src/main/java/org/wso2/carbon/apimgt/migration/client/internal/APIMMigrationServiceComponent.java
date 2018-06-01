@@ -26,6 +26,8 @@ import org.wso2.carbon.apimgt.migration.client.MigrationClientFactory;
 import org.wso2.carbon.apimgt.migration.client.MigrationExecutor;
 import org.wso2.carbon.apimgt.migration.util.Constants;
 import org.wso2.carbon.apimgt.migration.util.RegistryServiceImpl;
+import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
+import org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -50,6 +52,13 @@ import java.sql.SQLException;
  * policy="dynamic" bind="setTenantRegistryLoader" unbind="unsetTenantRegistryLoader"
  * @scr.reference name="apim.configuration" interface="org.wso2.carbon.apimgt.impl.APIManagerConfigurationService" cardinality="1..1"
  * policy="dynamic" bind="setApiManagerConfig" unbind="unsetApiManagerConfig"
+ * @scr.reference name="applicationManagement.service"
+ * interface="org.wso2.carbon.identity.application.mgt.ApplicationManagementService"
+ * cardinality="1..1" policy="dynamic" bind="setApplicationManagementService"
+ * unbind="unsetApplicationManagementService"
+ * @scr.reference name="identityCoreInitializedEventService"
+ * interface="org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent" cardinality="1..1"
+ * policy="dynamic" bind="setIdentityCoreInitializedEventService" unbind="unsetIdentityCoreInitializedEventService"
  */
 
 @SuppressWarnings("unused")
@@ -84,6 +93,7 @@ public class APIMMigrationServiceComponent {
         boolean isStatMigration = Boolean.parseBoolean(System.getProperty(Constants.ARG_MIGRATE_STATS));
         boolean removeDecryptionFailedKeysFromDB = Boolean.parseBoolean(
                 System.getProperty(Constants.ARG_REMOVE_DECRYPTION_FAILED_CONSUMER_KEYS_FROM_DB));
+        boolean isSP_APP_Population = Boolean.parseBoolean(System.getProperty(Constants.ARG_POPULATE_SPAPP));
 
         try {
             RegistryServiceImpl registryService = new RegistryServiceImpl();
@@ -103,6 +113,7 @@ public class APIMMigrationServiceComponent {
             arguments.setFileSystemMigration(isFileSystemMigration);
             arguments.setStatMigration(isStatMigration);
             arguments.setOptions(options);
+            arguments.setSP_APP_Migration(isSP_APP_Population);
             MigrationExecutor.execute(arguments);
 
         } catch (APIMigrationException e) {
@@ -217,4 +228,37 @@ public class APIMMigrationServiceComponent {
         ServiceHolder.setAPIManagerConfigurationService(null);
     }
 
+    /**
+     * Method to set ApplicationManagementService
+     *
+     * @param applicationManagementService
+     */
+    protected void setApplicationManagementService(ApplicationManagementService applicationManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting setApplicationManagementService");
+        }
+        ServiceHolder.setApplicationManagementService(applicationManagementService);
+    }
+
+    /**
+     * Method to unset ApplicationManagementService
+     *
+     * @param applicationManagementService
+     */
+    protected void unsetApplicationManagementService(ApplicationManagementService applicationManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting setApplicationManagementService");
+        }
+        ServiceHolder.setApplicationManagementService(null);
+    }
+
+    protected void unsetIdentityCoreInitializedEventService(IdentityCoreInitializedEvent identityCoreInitializedEvent) {
+        /* reference IdentityCoreInitializedEvent service to guarantee that this component will wait until identity core
+         is started */
+    }
+
+    protected void setIdentityCoreInitializedEventService(IdentityCoreInitializedEvent identityCoreInitializedEvent) {
+        /* reference IdentityCoreInitializedEvent service to guarantee that this component will wait until identity core
+         is started */
+    }
 }

@@ -79,4 +79,9 @@ public interface MigrationClient {
      * @throws APIMigrationException
      */
     public void optionalMigration(List<String> options) throws APIMigrationException;
+
+    /**
+     * This method is to populate SP_APP table
+     */
+    void populateSPAPPs() throws APIMigrationException;
 }
