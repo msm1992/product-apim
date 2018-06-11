@@ -157,6 +157,14 @@ public final class APIImportUtil {
                 File destinationFile = new File(destination, currentEntry);
                 File destinationParent = destinationFile.getParentFile();
 
+                String canonicalizedDestinationFilePath = destinationFile.getCanonicalPath();
+                if (!canonicalizedDestinationFilePath.startsWith(new File(destination).getCanonicalPath())) {
+                    String errorMessage = "Attempt to upload invalid zip archive with file at " + currentEntry
+                            + ". File path is outside target directory";
+                    log.error(errorMessage);
+                    throw new APIImportException(errorMessage);
+                }
+
                 // create the parent directory structure
                 if (destinationParent.mkdirs()) {
                     log.info("Creation of folder is successful. Directory Name : " + destinationParent.getName());
