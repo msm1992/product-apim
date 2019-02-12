@@ -45,9 +45,12 @@ import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.exceptions.AutomationFrameworkException;
 import org.wso2.carbon.automation.test.utils.http.client.HttpRequestUtil;
+import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
+import org.wso2.carbon.utils.ServerConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -62,6 +65,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
     private String endpointURL = "http://gdata.youtube.com/feeds/api/standardfeeds";
     private String version = "1.0.0";
     private int retries = 10; //because indexing needs time, we are retrying api calls at an interval of 3s
+    ServerConfigurationManager serverConfigurationManager;
 
     @Factory(dataProvider = "userModeDataProvider") public ContentSearchTestCase(TestUserMode userMode) {
         this.userMode = userMode;
@@ -72,9 +76,31 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
                 new Object[] { TestUserMode.TENANT_ADMIN }, };
     }
 
-    @BeforeClass(alwaysRun = true) public void setEnvironment() throws Exception {
+    @BeforeClass(alwaysRun = true)
+    public void setEnvironment() throws Exception {
         super.init(userMode);
         tokenApiUrl = new URL(getKeyManagerURLHttps() + "oauth2/token");
+
+        /*String apiManagerXml = getAMResourceLocation() + File.separator + "configFiles" + File.separator + "contentsearch" +
+                File.separator + "api-manager.xml";
+        String registryXml = getAMResourceLocation() + File.separator + "configFiles" + File.separator + "contentsearch" +
+                File.separator + "registry.xml";
+
+        if (serverConfigurationManager == null) {
+            serverConfigurationManager = new ServerConfigurationManager(gatewayContextMgt);
+        }
+        if (userMode == TestUserMode.SUPER_TENANT_ADMIN) {
+            String carbonHome = System.getProperty(ServerConstants.CARBON_HOME);
+            String apimConfigLocation = carbonHome + File.separator + "repository" +
+                    File.separator + "conf" + File.separator + "api-manager.xml";
+            String regConfigLocation = carbonHome + File.separator + "repository" +
+                    File.separator + "conf" + File.separator + "registry.xml";
+            File apimConfExistingFile = new File(apimConfigLocation);
+            File regConfExistingFile = new File(regConfigLocation);
+            serverConfigurationManager.applyConfigurationWithoutRestart(new File(apiManagerXml), apimConfExistingFile, true);
+            serverConfigurationManager.applyConfigurationWithoutRestart(new File(registryXml), regConfExistingFile, true);
+            serverConfigurationManager.restartGracefully();
+        }*/
     }
 
     @Test(groups = { "wso2.am" }, description = "Test basic content Search") public void testBasicContentSearch()
@@ -95,7 +121,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         //check in publisher
         for (int i = 0; i <= retries; i++) {
             HttpGet getPublisherAPIs = new HttpGet(
-                    getStoreURLHttps() + publisherRestAPIBasePath + "results?query=" + description);
+                    getStoreURLHttps() + publisherRestAPIBasePath + "search?query=" + description);
             getPublisherAPIs.setHeader("Authorization", "Bearer " + accessToken);
             HttpResponse publisherResponse = client.execute(getPublisherAPIs);
             if (getResultCount(publisherResponse) == 1) {
@@ -112,7 +138,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         }
 
         for (int i = 0; i <= retries; i++) {
-            HttpGet getStoreAPIs = new HttpGet(getStoreURLHttps() + storeRestAPIBasePath + "results?query=" + description);
+            HttpGet getStoreAPIs = new HttpGet(getStoreURLHttps() + storeRestAPIBasePath + "search?query=" + description);
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 getStoreAPIs.setHeader("X-WSO2-Tenant", user.getUserDomain());
             }
@@ -138,7 +164,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
                 APILifeCycleState.CREATED);
         apiPublisher.changeAPILifeCycleStatus(updateRequest);
         for (int i = 0; i <= retries; i++) {
-            HttpGet getStoreAPIs = new HttpGet(getStoreURLHttps() + storeRestAPIBasePath + "results?query=" + description);
+            HttpGet getStoreAPIs = new HttpGet(getStoreURLHttps() + storeRestAPIBasePath + "search?query=" + description);
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 getStoreAPIs.setHeader("X-WSO2-Tenant", user.getUserDomain());
             }
@@ -188,7 +214,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         //check in publisher
         for (int i = 0; i <= retries; i++) {
             HttpGet getPublisherAPIs = new HttpGet(
-                    getPublisherURLHttps() + publisherRestAPIBasePath + "results?query=github4156");
+                    getPublisherURLHttps() + publisherRestAPIBasePath + "search?query=github4156");
             getPublisherAPIs.setHeader("Authorization", "Bearer " + accessToken);
             HttpResponse publisherResponse = client.execute(getPublisherAPIs);
             if (getResultCount(publisherResponse) == 1) {
@@ -206,7 +232,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
 
         //check in store
         for (int i = 0; i <= retries; i++) {
-            HttpGet getStoreAPIs = new HttpGet(getStoreURLHttps() + storeRestAPIBasePath + "results?query=github4156");
+            HttpGet getStoreAPIs = new HttpGet(getStoreURLHttps() + storeRestAPIBasePath + "search?query=github4156");
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 getStoreAPIs.setHeader("X-WSO2-Tenant", user.getUserDomain());
             }
@@ -238,8 +264,8 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         String loginPermission = "/permission/admin/login";
         String apiPublishPermission = "/permission/admin/manage/api/publish";
         String password = "wso2apim";
-        String user1 = "user1";
-        String user2 = "user2";
+        String user1 = "contentsearchuser1";
+        String user2 = "contentsearchuser2";
         String role1 = "creator_publisher_role";
         String role2 = "publisher_role";
         String description = "UnifiedSearchFeatureWithAccessControl";
@@ -266,7 +292,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         //check with user1
         for (int i = 0; i <= retries; i++) {
             HttpGet getAPIsForUser1 = new HttpGet(
-                    getPublisherURLHttps() + publisherRestAPIBasePath + "results?query=" + description);
+                    getPublisherURLHttps() + publisherRestAPIBasePath + "search?query=" + description);
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 user1 = user1 + "@" + user.getUserDomain();
             }
@@ -289,7 +315,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         //check with user2 who doesn't have permissions for api
         for (int i = 0; i <= retries; i++) {
             HttpGet getAPIsForUser2 = new HttpGet(
-                    getPublisherURLHttps() + publisherRestAPIBasePath + "results?query=" + description);
+                    getPublisherURLHttps() + publisherRestAPIBasePath + "search?query=" + description);
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 user2 = user2 + "@" + user.getUserDomain();
             }
@@ -326,8 +352,8 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         String apiSubscribePermission = "/permission/admin/manage/api/subscribe";
         String loginPermission = "/permission/admin/login";
         String password = "wso2apim";
-        String user1 = "user1";
-        String user2 = "user2";
+        String user1 = "contentsearchuser3";
+        String user2 = "contentsearchuser4";
         String role1 = "subscriber1_role";
         String role2 = "subscriber2_role";
         String description = "UnifiedSearchFeatureWithAccessControl";
@@ -353,7 +379,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         //check with user1
         for (int i = 0; i <= retries; i++) {
             HttpGet getAPIsForUser1 = new HttpGet(
-                    getStoreURLHttps() + storeRestAPIBasePath + "results?query=" + description);
+                    getStoreURLHttps() + storeRestAPIBasePath + "search?query=" + description);
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 getAPIsForUser1.setHeader("X-WSO2-Tenant", user.getUserDomain());
                 user1 = user1 + "@" + user.getUserDomain();
@@ -377,7 +403,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         //check with user2 who doesn't have permissions for api
         for (int i = 0; i <= retries; i++) {
             HttpGet getAPIsForUser2 = new HttpGet(
-                    getStoreURLHttps() + storeRestAPIBasePath + "results?query=" + description);
+                    getStoreURLHttps() + storeRestAPIBasePath + "search?query=" + description);
             if (TestUserMode.TENANT_ADMIN == userMode) {
                 getAPIsForUser2.setHeader("X-WSO2-Tenant", user.getUserDomain());
                 user2 = user2 + "@" + user.getUserDomain();
@@ -424,6 +450,7 @@ public class ContentSearchTestCase extends APIMIntegrationBaseTest {
         while ((line = reader.readLine()) != null) {
             jsonString = jsonString + line;
         }
+        log.info(jsonString);
         JSONObject responseJSON = new JSONObject(jsonString);
         log.info(responseJSON);
         return responseJSON.getInt("count");
