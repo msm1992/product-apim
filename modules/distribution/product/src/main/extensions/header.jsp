@@ -18,17 +18,25 @@
 
 <!-- localize.jsp MUST already be included in the calling script -->
 
+<%@ page import="java.io.FileReader" %>
+<%@ page import="org.json.simple.parser.JSONParser"%>
+<%@ page import="org.json.simple.JSONObject"%>
+
+<head>
+    <link href=<%=request.getAttribute("tenantCSSFile")%> rel="stylesheet">
+</head>
+
 <!-- header -->
 <header class="header header-default">
     <div class="container-fluid"><br></div>
     <div class="container-fluid">
         <div class="pull-left brand float-remove-xs text-center-xs">
             <a href="#">
-                <img src="images/logo-inverse.svg"
-		             alt="WSO2"
-                     title="WSO2"
+                <img src=<%=request.getAttribute("tenantLogoFile")%>
+		             alt=<%=request.getAttribute("logoAltText")%>
+                     title=<%=request.getAttribute("logoTitle")%>
                      class="logo">
-                <h1><em>API Manager</em></h1>
+                <h1><em><%=request.getAttribute("headerTitle")%></em></h1>
             </a>
         </div>
     </div>
