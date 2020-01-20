@@ -21,12 +21,12 @@
 <!-- footer -->
 <footer class="footer">
     <div class="container-fluid">
-        <p>WSO2 API Manager | &copy;
+        <p><%=request.getAttribute("footerText")%> | &copy;
             <script>document.write(new Date().getFullYear());</script>
-            <a href="https://wso2.com/"
+            <a href=<%=request.getAttribute("footerLink")%>
                target="_blank">
                <i class="icon fw fw-wso2"></i>
-               Inc
+               <%=request.getAttribute("footerLinkText")%>
             </a>
             . All rights reserved
         </p>
