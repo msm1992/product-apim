@@ -294,7 +294,7 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
         securitySchemes5.add("basic_auth");
         securitySchemes5.add("oauth_basic_auth_api_key_mandatory");
         apiRequest5.setSecurityScheme(securitySchemes5);
-        apiRequest5.setDefault_version("true");
+        apiRequest5.setDefault_version("false");
         apiRequest5.setHttps_checked("https");
         apiRequest5.setHttp_checked(null);
         HttpResponse response5 = restAPIPublisher.addAPI(apiRequest5);
