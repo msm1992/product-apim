@@ -186,10 +186,10 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
         securitySchemes.add("mutualssl");
         securitySchemes.add("mutualssl_mandatory");
         apiRequest1.setSecurityScheme(securitySchemes);
-        apiRequest1.setDefault_version("true");
+        apiRequest1.setDefault_version("false");
         apiRequest1.setHttps_checked("https");
         apiRequest1.setHttp_checked(null);
-        apiRequest1.setDefault_version_checked("true");
+        apiRequest1.setDefault_version_checked("false");
         HttpResponse response1 = restAPIPublisher.addAPI(apiRequest1);
         apiId1 = response1.getData();
 
@@ -213,10 +213,10 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
         apiRequest2.setTags(API_TAGS);
         apiRequest2.setVisibility(APIDTO.VisibilityEnum.PUBLIC.getValue());
         apiRequest2.setOperationsDTOS(operationsDTOS);
-        apiRequest2.setDefault_version("true");
+        apiRequest2.setDefault_version("false");
         apiRequest2.setHttps_checked("https");
         apiRequest2.setHttp_checked(null);
-        apiRequest2.setDefault_version_checked("true");
+        apiRequest2.setDefault_version_checked("false");
         List<String> securitySchemes2 = new ArrayList<>();
         securitySchemes2.add("mutualssl");
         securitySchemes2.add("oauth2");
@@ -250,10 +250,10 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
         securitySchemes3.add("mutualssl_mandatory");
         securitySchemes3.add("oauth_basic_auth_api_key_mandatory");
         apiRequest3.setSecurityScheme(securitySchemes3);
-        apiRequest3.setDefault_version("true");
+        apiRequest3.setDefault_version("false");
         apiRequest3.setHttps_checked("https");
         apiRequest3.setHttp_checked(null);
-        apiRequest3.setDefault_version_checked("true");
+        apiRequest3.setDefault_version_checked("false");
         HttpResponse response3 = restAPIPublisher.addAPI(apiRequest3);
         apiId3 = response3.getData();
         String certThree = getAMResourceLocation() + File.separator + "lifecycletest" + File.separator + "mutualssl"
@@ -270,11 +270,11 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
         apiRequest4.setTags(API_TAGS);
         apiRequest4.setVisibility(APIDTO.VisibilityEnum.PUBLIC.getValue());
         apiRequest4.setOperationsDTOS(operationsDTOS);
-        apiRequest4.setDefault_version("true");
+        apiRequest4.setDefault_version("false");
         apiRequest4.setHttps_checked("https");
         apiRequest4.setHttp_checked(null);
         apiRequest4.setProvider(user.getUserName());
-        apiRequest4.setDefault_version_checked("true");
+        apiRequest4.setDefault_version_checked("false");
         List<String> securitySchemes4 = new ArrayList<>();
         securitySchemes4.add("api_key");
         securitySchemes4.add("oauth_basic_auth_api_key_mandatory");
@@ -335,10 +335,10 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
         List<String> securitySchemes6 = new ArrayList<>();
         securitySchemes6.add("oauth2");
         apiRequest6.setSecurityScheme(securitySchemes6);
-        apiRequest6.setDefault_version("true");
+        apiRequest6.setDefault_version("false");
         apiRequest6.setHttps_checked("https");
         apiRequest6.setHttp_checked(null);
-        apiRequest6.setDefault_version_checked("true");
+        apiRequest6.setDefault_version_checked("false");
 
         HttpResponse response6 = restAPIPublisher.addAPI(apiRequest6);
         apiId6 = response6.getData();
@@ -360,10 +360,10 @@ public class APISecurityTestCase extends APIManagerLifecycleBaseTest {
 
         apiRequest7.setOperationsDTOS(operationsDTOS);
         apiRequest7.setSecurityScheme(securitySchemes4);
-        apiRequest7.setDefault_version("true");
+        apiRequest7.setDefault_version("false");
         apiRequest7.setHttps_checked("https");
         apiRequest7.setHttp_checked(null);
-        apiRequest7.setDefault_version_checked("true");
+        apiRequest7.setDefault_version_checked("false");
 
         HttpResponse response7 = restAPIPublisher.addAPI(apiRequest7);
         apiId7 = response7.getData();
